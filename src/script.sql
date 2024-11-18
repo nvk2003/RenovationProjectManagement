@@ -1,22 +1,22 @@
 -- DROP TABLES
-DROP TABLE DesignerExperienceLevel;
-DROP TABLE DesignerDetails;
-DROP TABLE DesignerLicense;
-DROP TABLE SupervisorDetails;
-DROP TABLE Supervisor;
-DROP TABLE Contractor;
-DROP TABLE ContractorLicense;
-DROP TABLE Material;
-DROP TABLE Purchase;
-DROP TABLE Project;
-DROP TABLE ResidentialProject;
-DROP TABLE CommercialProject;
-DROP TABLE Budget;
-DROP TABLE OwnerEntity;
-DROP TABLE WorkOn;
-DROP TABLE WageWorker;
-DROP TABLE WageWorkerContractor;
-DROP TABLE Review;
+DROP TABLE DesignerExperienceLevel CASCADE CONSTRAINTS;
+DROP TABLE DesignerDetails CASCADE CONSTRAINTS;
+DROP TABLE DesignerLicense CASCADE CONSTRAINTS;
+DROP TABLE SupervisorDetails CASCADE CONSTRAINTS;
+DROP TABLE Supervisor CASCADE CONSTRAINTS;
+DROP TABLE Contractor CASCADE CONSTRAINTS;
+DROP TABLE ContractorLicense CASCADE CONSTRAINTS;
+DROP TABLE Material CASCADE CONSTRAINTS;
+DROP TABLE Purchase CASCADE CONSTRAINTS;
+DROP TABLE Project CASCADE CONSTRAINTS;
+DROP TABLE ResidentialProject CASCADE CONSTRAINTS;
+DROP TABLE CommercialProject CASCADE CONSTRAINTS;
+DROP TABLE Budget CASCADE CONSTRAINTS;
+DROP TABLE OwnerEntity CASCADE CONSTRAINTS;
+DROP TABLE WorkOn CASCADE CONSTRAINTS;
+DROP TABLE WageWorker CASCADE CONSTRAINTS;
+DROP TABLE WageWorkerContractor CASCADE CONSTRAINTS;
+DROP TABLE Review CASCADE CONSTRAINTS;
 
 
 
@@ -171,30 +171,31 @@ CREATE TABLE WorkOn (
     Contractor_ID VARCHAR(20),  
     Contractor_Phone CHAR(10),
     Project_ID VARCHAR(20),  
-   	PRIMARY KEY (Contractor_ID, Project_ID),
-   	FOREIGN KEY (Contractor_ID, Contractor_Phone) REFERENCES Contractor(Contractor_ID, Contractor_Phone) ON DELETE CASCADE,
-   	FOREIGN KEY (Project_ID) REFERENCES Project ON DELETE CASCADE
+    PRIMARY KEY (Contractor_ID, Contractor_Phone, Project_ID),
+    FOREIGN KEY (Contractor_ID, Contractor_Phone) REFERENCES Contractor(Contractor_ID, Contractor_Phone) ON DELETE CASCADE,
+    FOREIGN KEY (Project_ID) REFERENCES Project(Project_ID) ON DELETE CASCADE
 );
 
 
 CREATE TABLE WageWorker (
-    --  Should I add Contractor_Phone to Primary Key
-	Wage_Worker_ID VARCHAR(20),
+    Wage_Worker_ID VARCHAR(20),
     Contractor_ID VARCHAR(20),
     Contractor_Phone CHAR(10),
-   	Wage_Worker_Hourly_Rate NUMERIC(4, 2) NOT NULL,
-   	Wage_Worker_Skills VARCHAR(20),
-   	PRIMARY KEY (Wage_Worker_ID, Contractor_ID),
-   	FOREIGN KEY (Contractor_ID, Contractor_Phone) REFERENCES Contractor(Contractor_ID, Contractor_Phone) ON DELETE CASCADE,
+    Wage_Worker_Hourly_Rate NUMERIC(4, 2) NOT NULL,
+    Wage_Worker_Skills VARCHAR(20),
+    PRIMARY KEY (Wage_Worker_ID, Contractor_ID, Contractor_Phone),
+    FOREIGN KEY (Contractor_ID, Contractor_Phone) REFERENCES Contractor(Contractor_ID, Contractor_Phone) ON DELETE CASCADE
 );
 
-CREATE TABLE  WageWorkerContractor (
-    --  Have doubt if I should add Contractor_Phone to Primary and Foreign Key
-	Contractor_License_Number VARCHAR(20),
-	Wage_Worker_ID VARCHAR(20),
-	Contractor_ID VARCHAR(20),
-	PRIMARY KEY (Contractor_License_Number),
-	FOREIGN KEY (Wage_Worker_ID, Contractor_ID) REFERENCES WageWorker(Wage_Worker_ID, Contractor_ID)
+
+CREATE TABLE WageWorkerContractor (
+    Contractor_License_Number VARCHAR(20),
+    Wage_Worker_ID VARCHAR(20),
+    Contractor_ID VARCHAR(20),
+    Contractor_Phone CHAR(10),
+    PRIMARY KEY (Contractor_License_Number),
+    FOREIGN KEY (Wage_Worker_ID, Contractor_ID, Contractor_Phone) 
+        REFERENCES WageWorker(Wage_Worker_ID, Contractor_ID, Contractor_Phone)
 );
 
 
@@ -219,7 +220,8 @@ INSERT INTO DesignerExperienceLevel(Designer_Experience_Level, Designer_Hourly_R
 INSERT INTO DesignerExperienceLevel(Designer_Experience_Level, Designer_Hourly_Rate) VALUES ('Intermediate',40.50); 
 INSERT INTO DesignerExperienceLevel(Designer_Experience_Level, Designer_Hourly_Rate) VALUES ('Senior', 50.00);
 INSERT INTO DesignerExperienceLevel(Designer_Experience_Level, Designer_Hourly_Rate) VALUES ('Lead',65.00);
-INSERT INTO DesignerExperienceLevel(Designer_Experience_Level, Designer_Hourly_Rate) VALUES ('Junior',30.00);
+INSERT INTO DesignerExperienceLevel(Designer_Experience_Level, Designer_Hourly_Rate) VALUES ('Expert', 80.00);
+
 
 -- Tuples for Supervisor
 INSERT INTO Supervisor(Supervisor_ID, Supervisor_Name, Supervisor_Phone) VALUES ('S001', 'Michael Lee', '6789012345');
@@ -244,6 +246,7 @@ INSERT INTO DesignerLicense(Designer_License_Number, Designer_ID) VALUES ('DL003
 INSERT INTO DesignerLicense(Designer_License_Number, Designer_ID) VALUES ('DL004', 'D004');
 INSERT INTO DesignerLicense(Designer_License_Number, Designer_ID) VALUES ('DL005', 'D005');
 
+
 -- Tuples for SupervisorDetails
 INSERT INTO SupervisorDetails(Supervisor_Name, Supervisor_Phone, Designer_Experience_Level, Designer_License_Number) VALUES ('Michael Lee', '6789012345', 'Senior', 'DL001');
 INSERT INTO SupervisorDetails(Supervisor_Name, Supervisor_Phone, Designer_Experience_Level, Designer_License_Number) VALUES ('Sarah Miller', '7890123456', 'Lead', 'DL002');
@@ -261,11 +264,11 @@ INSERT INTO Contractor(Contractor_ID, Contractor_Name, Contractor_Specialization
 
 
 -- Tuples for ContractorLicense
-INSERT INTO ContractorLicense(Contractor_License_Number, Supervisor_Name, Supervisor_Phone, Contractor_ID) VALUES ('CL001', 'Michael Lee', '6789012345', 'C001');
-INSERT INTO ContractorLicense(Contractor_License_Number, Supervisor_Name, Supervisor_Phone, Contractor_ID) VALUES ('CL002', 'Sarah Miller', '7890123456', 'C002');
-INSERT INTO ContractorLicense(Contractor_License_Number, Supervisor_Name, Supervisor_Phone, Contractor_ID) VALUES ('CL003', 'James Wilson', '8901234567', 'C003');
-INSERT INTO ContractorLicense(Contractor_License_Number, Supervisor_Name, Supervisor_Phone, Contractor_ID) VALUES ('CL004', 'Nancy White', '9012345678', 'C004');
-INSERT INTO ContractorLicense(Contractor_License_Number, Supervisor_Name, Supervisor_Phone, Contractor_ID) VALUES ('CL005', 'Tom Harris', '0123456789', 'C005');
+INSERT INTO ContractorLicense(Contractor_License_Number, Supervisor_Name, Supervisor_Phone, Contractor_ID, Contractor_Phone) VALUES ('CL001', 'Michael Lee', '6789012345', 'C001', '1122334455');
+INSERT INTO ContractorLicense(Contractor_License_Number, Supervisor_Name, Supervisor_Phone, Contractor_ID, Contractor_Phone) VALUES ('CL002', 'Sarah Miller', '7890123456', 'C002', '2233445566');
+INSERT INTO ContractorLicense(Contractor_License_Number, Supervisor_Name, Supervisor_Phone, Contractor_ID, Contractor_Phone) VALUES ('CL003', 'James Wilson', '8901234567', 'C003', '3344556677');
+INSERT INTO ContractorLicense(Contractor_License_Number, Supervisor_Name, Supervisor_Phone, Contractor_ID, Contractor_Phone) VALUES ('CL004', 'Nancy White', '9012345678', 'C004', '4455667788');
+INSERT INTO ContractorLicense(Contractor_License_Number, Supervisor_Name, Supervisor_Phone, Contractor_ID, Contractor_Phone) VALUES ('CL005', 'Tom Harris', '0123456789', 'C005', '5566778899');
 
 
 -- Tuples for Material
@@ -274,7 +277,6 @@ INSERT INTO Material(Material_ID, Material_Type, Material_Name, Material_Order_Q
 INSERT INTO Material(Material_ID, Material_Type, Material_Name, Material_Order_Quantity, Material_Used_Quantity, Material_Order_Date, Material_Cost_Per_Unit) VALUES ('M003', 'Steel', 'Rebar', '200', '150', '2023-03-05', 15.00);
 INSERT INTO Material(Material_ID, Material_Type, Material_Name, Material_Order_Quantity, Material_Used_Quantity, Material_Order_Date, Material_Cost_Per_Unit) VALUES ('M004', 'Glass', 'Window Glass', '70', '50', '2023-04-20', 22.30);
 INSERT INTO Material(Material_ID, Material_Type, Material_Name, Material_Order_Quantity, Material_Used_Quantity, Material_Order_Date, Material_Cost_Per_Unit) VALUES ('M005', 'Plastic', 'PVC Pipes', '120', '100', '2023-05-15', 3.75);
-
 
 
 -- Tuples for Purchase
@@ -291,26 +293,35 @@ INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Bud
 INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B003', 100000.00, 110000.00, 20000.00, 130000.00, 15000.00);
 INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B004', 120000.00, 130000.00, 25000.00, 155000.00, 20000.00);
 INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B005', 90000.00, 100000.00, 18000.00, 118000.00, 12000.00);
+INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B006', 70000.00, 80000.00, 12000.00, 92000.00, 8000.00);
+INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B007', 95000.00, 105000.00, 17000.00, 122000.00, 10000.00);
+INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B008', 85000.00, 95000.00, 16000.00, 111000.00, 9000.00);
+INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B009', 110000.00, 120000.00, 22000.00, 142000.00, 15000.00);
+INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B010', 60000.00, 70000.00, 13000.00, 83000.00, 7000.00);
 
 
 -- Tuples for OwnerEntity
-INSERT INTO OwnerEntity(Owner_ID, Owner_Name, Owner_Type, Owner_Phone) VALUES ('O001', 'John Doe', 'Individual', '9876543210');
-INSERT INTO OwnerEntity(Owner_ID, Owner_Name, Owner_Type, Owner_Phone) VALUES ('O002', 'Jane Smith', 'Company', '8765432109');
-INSERT INTO OwnerEntity(Owner_ID, Owner_Name, Owner_Type, Owner_Phone) VALUES ('O003', 'Green Solutions', 'Non-Profit', '7654321098');
-INSERT INTO OwnerEntity(Owner_ID, Owner_Name, Owner_Type, Owner_Phone) VALUES ('O004', 'Eco Builders', 'Company', '6543210987');
-INSERT INTO OwnerEntity(Owner_ID, Owner_Name, Owner_Type, Owner_Phone) VALUES ('O005', 'Sustainable Living', 'Non-Profit', '5432109876');
+INSERT INTO OwnerEntity(Owner_ID, Owner_Name, Owner_Type, Owner_Phone) VALUES ('O001', 'John Doe', 'Residential', '9876543210');
+INSERT INTO OwnerEntity(Owner_ID, Owner_Name, Owner_Type, Owner_Phone) VALUES ('O002', 'Jane Smith', 'Residential', '8765432109');
+INSERT INTO OwnerEntity(Owner_ID, Owner_Name, Owner_Type, Owner_Phone) VALUES ('O003', 'Green Solutions', 'Commercial', '7654321098');
+INSERT INTO OwnerEntity(Owner_ID, Owner_Name, Owner_Type, Owner_Phone) VALUES ('O004', 'Eco Builders', 'Commercial', '6543210987');
+INSERT INTO OwnerEntity(Owner_ID, Owner_Name, Owner_Type, Owner_Phone) VALUES ('O005', 'Sustainable Living', 'Commercial', '5432109876');
 
 
 -- Tuples for Project
-INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P001', '123 Main St', 'Residential Project', '2023-01-10', '2023-12-15', 'In Progress', 'S001', '6789012345', 'B001', 'O001', '9876543210');
-INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P002', '456 Market St', 'Commercial Complex', '2023-02-20', '2024-01-20', 'In Progress', 'S002', '7890123456', 'B002', 'O002', '8765432109');
-INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P003', '789 Pine St', 'Urban Renewal', '2023-03-15', '2024-06-15', 'Not Started', 'S003', '8901234567', 'B003', 'O003', '7654321098');
-INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P004', '1010 Oak St', 'Sustainable Housing', '2023-04-25', '2024-09-10', 'Completed', 'S004', '9012345678', 'B004', 'O004', '6543210987');
-INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P005', '202 Elm St', 'Mixed-Use Development', '2023-05-05', '2024-03-01', 'In Progress', 'S005', '0123456789', 'B005', 'O005', '5432109876');
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P001', '123 Main St', 'Family Home', '2023-01-10', '2023-12-15', 'In Progress', 'S001', '6789012345', 'B001', 'O001', '9876543210');
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P002', '456 Market St', 'Central Market', '2023-02-20', '2024-01-20', 'In Progress', 'S002', '7890123456', 'B002', 'O003', '7654321098');
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P003', '789 Pine St', 'Pinecrest Office', '2023-03-15', '2024-06-15', 'Not Started', 'S003', '8901234567', 'B003', 'O003', '7654321098');
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P004', '1010 Oak St', 'Sunset Villa', '2023-04-25', '2024-09-10', 'Completed', 'S004', '9012345678', 'B004', 'O002', '8765432109');
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P005', '202 Elm St', 'Retail Hub', '2023-05-05', '2024-03-01', 'In Progress', 'S005', '0123456789', 'B005', 'O005', '5432109876');
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P006', '303 Cedar St', 'Cedar Heights', '2023-06-15', '2024-05-01', 'Not Started', 'S001', '6789012345', 'B006', 'O001', '9876543210');
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P007', '404 Maple St', 'Brookside Townhouse', '2023-07-10', '2024-08-20', 'In Progress', 'S002', '7890123456', 'B007', 'O002', '8765432109');
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P008', '505 Birch St', 'Birchwood Estate', '2023-08-25', '2024-07-15', 'In Progress', 'S003', '8901234567', 'B008', 'O002', '8765432109');
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P009', '606 Spruce St', 'Logistics Warehouse', '2023-09-05', '2024-10-01', 'Completed', 'S004', '9012345678', 'B009', 'O004', '6543210987');
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P010', '707 Redwood St', 'Redwood Hotel', '2023-10-01', '2024-12-15', 'In Progress', 'S005', '0123456789', 'B010', 'O005', '5432109876');
 
 
 -- Tuples for Residential Project
--- TODO: Should add projects that are there in the parent class here
 INSERT INTO ResidentialProject(Project_ID, Property_Type, No_of_rooms_To_Renovate) VALUES ('P001', 'Single Family', 3);
 INSERT INTO ResidentialProject(Project_ID, Property_Type, No_of_rooms_To_Renovate) VALUES ('P004', 'Villa', 5);
 INSERT INTO ResidentialProject(Project_ID, Property_Type, No_of_rooms_To_Renovate) VALUES ('P006', 'Condo', 2);
@@ -318,13 +329,12 @@ INSERT INTO ResidentialProject(Project_ID, Property_Type, No_of_rooms_To_Renovat
 INSERT INTO ResidentialProject(Project_ID, Property_Type, No_of_rooms_To_Renovate) VALUES ('P008', 'Luxury Villa', 7);
 
 
--- Tuples for CommercialProject
--- TODO: Should add projects that are there in the parent class here
+-- Tuples for Commercial Project
 INSERT INTO CommercialProject(Project_ID, Business_Type) VALUES ('P002', 'Shopping Mall');
 INSERT INTO CommercialProject(Project_ID, Business_Type) VALUES ('P003', 'Office Complex');
+INSERT INTO CommercialProject(Project_ID, Business_Type) VALUES ('P005', 'Retail Store');
 INSERT INTO CommercialProject(Project_ID, Business_Type) VALUES ('P009', 'Warehouse');
 INSERT INTO CommercialProject(Project_ID, Business_Type) VALUES ('P010', 'Hotel');
-INSERT INTO CommercialProject(Project_ID, Business_Type) VALUES ('P011', 'Retail Store');
 
 
 -- Tuples for WorkOn
@@ -336,20 +346,20 @@ INSERT INTO WorkOn(Contractor_ID, Contractor_Phone, Project_ID) VALUES ('C005', 
 
 
 -- Tuples for WageWoker
---  TODO: Should I add Contractor_Phone to Primary Key
 INSERT INTO WageWorker(Wage_Worker_ID, Contractor_ID, Contractor_Phone, Wage_Worker_Hourly_Rate, Wage_Worker_Skills) VALUES ('WW001', 'C001', '1122334455', 25.00, 'Carpentry');
 INSERT INTO WageWorker(Wage_Worker_ID, Contractor_ID, Contractor_Phone, Wage_Worker_Hourly_Rate, Wage_Worker_Skills) VALUES ('WW002', 'C002', '2233445566', 30.00, 'Plumbing');
 INSERT INTO WageWorker(Wage_Worker_ID, Contractor_ID, Contractor_Phone, Wage_Worker_Hourly_Rate, Wage_Worker_Skills) VALUES ('WW003', 'C003', '3344556677', 35.00, 'Electrical');
 INSERT INTO WageWorker(Wage_Worker_ID, Contractor_ID, Contractor_Phone, Wage_Worker_Hourly_Rate, Wage_Worker_Skills) VALUES ('WW004', 'C004', '4455667788', 28.00, 'Masonry');
 INSERT INTO WageWorker(Wage_Worker_ID, Contractor_ID, Contractor_Phone, Wage_Worker_Hourly_Rate, Wage_Worker_Skills) VALUES ('WW005', 'C005', '5566778899', 22.00, 'Painting');
 
+
 -- Tuples for WageWorkerContractor
---  TODO: Have doubt if I should add Contractor_Phone to Primary and Foreign Key
-INSERT INTO WageWorkerContractor(Contractor_License_Number, Wage_Worker_ID, Contractor_ID) VALUES ('CL001', 'WW001', 'C001');
-INSERT INTO WageWorkerContractor(Contractor_License_Number, Wage_Worker_ID, Contractor_ID) VALUES ('CL002', 'WW002', 'C002');
-INSERT INTO WageWorkerContractor(Contractor_License_Number, Wage_Worker_ID, Contractor_ID) VALUES ('CL003', 'WW003', 'C003');
-INSERT INTO WageWorkerContractor(Contractor_License_Number, Wage_Worker_ID, Contractor_ID) VALUES ('CL004', 'WW004', 'C004');
-INSERT INTO WageWorkerContractor(Contractor_License_Number, Wage_Worker_ID, Contractor_ID) VALUES ('CL005', 'WW005', 'C005');
+INSERT INTO WageWorkerContractor(Contractor_License_Number, Wage_Worker_ID, Contractor_ID, Contractor_Phone) VALUES ('CL001', 'WW001', 'C001', '1122334455');
+INSERT INTO WageWorkerContractor(Contractor_License_Number, Wage_Worker_ID, Contractor_ID, Contractor_Phone) VALUES ('CL002', 'WW002', 'C002', '2233445566');
+INSERT INTO WageWorkerContractor(Contractor_License_Number, Wage_Worker_ID, Contractor_ID, Contractor_Phone) VALUES ('CL003', 'WW003', 'C003', '3344556677');
+INSERT INTO WageWorkerContractor(Contractor_License_Number, Wage_Worker_ID, Contractor_ID, Contractor_Phone) VALUES ('CL004', 'WW004', 'C004', '4455667788');
+INSERT INTO WageWorkerContractor(Contractor_License_Number, Wage_Worker_ID, Contractor_ID, Contractor_Phone) VALUES ('CL005', 'WW005', 'C005', '5566778899');
+
 
 -- Tuples for Review
 INSERT INTO Review(Review_ID, Review_Date, Review_Rating, Review_Comment, Owner_ID, Owner_Phone) VALUES ('R001', '2023-01-15', '5', 'Great service, highly recommended', 'O001', '9876543210');
@@ -360,3 +370,47 @@ INSERT INTO Review(Review_ID, Review_Date, Review_Rating, Review_Comment, Owner_
 
 
 
+
+-- CREATE TABLE WorkOn (
+--     Contractor_ID VARCHAR(20),  
+--     Contractor_Phone CHAR(10),
+--     Project_ID VARCHAR(20),  
+--    	PRIMARY KEY (Contractor_ID, Contractor_Phone, Project_ID),
+--    	FOREIGN KEY (Contractor_ID, Contractor_Phone) REFERENCES Contractor(Contractor_ID, Contractor_Phone) ON DELETE CASCADE,
+--    	FOREIGN KEY (Project_ID) REFERENCES Project(Project_ID) ON DELETE CASCADE
+-- );
+
+
+-- CREATE TABLE WageWorker (
+--     --  Should I add Contractor_Phone to Primary Key
+-- 	Wage_Worker_ID VARCHAR(20),
+--     Contractor_ID VARCHAR(20),
+--     Contractor_Phone CHAR(10),
+--    	Wage_Worker_Hourly_Rate NUMERIC(4, 2) NOT NULL,
+--    	Wage_Worker_Skills VARCHAR(20),
+--    	PRIMARY KEY (Wage_Worker_ID, Contractor_ID, Contractor_Phone),
+--    	FOREIGN KEY (Contractor_ID, Contractor_Phone) REFERENCES Contractor(Contractor_ID, Contractor_Phone) ON DELETE CASCADE,
+-- );
+
+-- CREATE TABLE  WageWorkerContractor (
+--     --  Have doubt if I should add Contractor_Phone to Primary and Foreign Key
+-- 	Contractor_License_Number VARCHAR(20),
+-- 	Wage_Worker_ID VARCHAR(20),
+-- 	Contractor_ID VARCHAR(20),
+--     Contractor_Phone CHAR(10),
+-- 	PRIMARY KEY (Contractor_License_Number),
+-- 	FOREIGN KEY (Wage_Worker_ID, Contractor_ID, Contractor_Phone) REFERENCES WageWorker(Wage_Worker_ID, Contractor_ID, Contractor_Phone)
+-- );
+
+
+-- Old Tuples for Project
+-- INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P001', '123 Main St', 'Residential Project', '2023-01-10', '2023-12-15', 'In Progress', 'S001', '6789012345', 'B001', 'O001', '9876543210');
+-- INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P002', '456 Market St', 'Commercial Complex', '2023-02-20', '2024-01-20', 'In Progress', 'S002', '7890123456', 'B002', 'O002', '8765432109');
+-- INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P003', '789 Pine St', 'Urban Renewal', '2023-03-15', '2024-06-15', 'Not Started', 'S003', '8901234567', 'B003', 'O003', '7654321098');
+-- INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P004', '1010 Oak St', 'Sustainable Housing', '2023-04-25', '2024-09-10', 'Completed', 'S004', '9012345678', 'B004', 'O004', '6543210987');
+-- INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P005', '202 Elm St', 'Mixed-Use Development', '2023-05-05', '2024-03-01', 'In Progress', 'S005', '0123456789', 'B005', 'O005', '5432109876');
+-- INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P006', '303 Cedar St', 'Green Building Initiative', '2023-06-15', '2024-05-01', 'Not Started', 'S001', '6789012345', 'B006', 'O001', '9876543210');
+-- INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P007', '404 Maple St', 'Eco-Friendly Office', '2023-07-10', '2024-08-20', 'In Progress', 'S002', '7890123456', 'B007', 'O002', '8765432109');
+-- INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P008', '505 Birch St', 'Community Center', '2023-08-25', '2024-07-15', 'In Progress', 'S003', '8901234567', 'B008', 'O003', '7654321098');
+-- INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P009', '606 Spruce St', 'Smart City Project', '2023-09-05', '2024-10-01', 'Completed', 'S004', '9012345678', 'B009', 'O004', '6543210987');
+-- INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P010', '707 Redwood St', 'Urban Park Development', '2023-10-01', '2024-12-15', 'In Progress', 'S005', '0123456789', 'B010', 'O005', '5432109876');

@@ -1,3 +1,4 @@
+
 <?php
 // The preceding tag tells the web server to parse the following text as PHP
 // rather than HTML (the default)chcgoogl
@@ -20,164 +21,7 @@ $success = true;	// keep track of errors so page redirects only if there are no 
 
 $show_debug_alert_messages = False; // show which methods are being triggered (see debugAlertMessage())
 
-// The next tag tells the web server to stop parsing the text as PHP. Use the
-// pair of tags wherever the content switches to PHP
-?>
-
-<html>
-
-<head>
-	<title>Renovation Project Management</title>
-
-</head>
-
-<body>
-	<div style = "text-align: center;">
-	<h1>Welcome</h1>
-	<p> Please select you role and enter your ID to login.</p>
-	<form method="POST" action="mainpage.php">
-		<label for="Role"> Select your role:</label><br>
-		<select name="Role" id= "role" required>
-			<option value="Supervisor">Supervisor</option>
-			<option value="Owner">Owner</option>
-        </select><br><br>
-
-		<label for="user_id">Enter your ID:</label><br>
-		<input type="text" id="user_id" name="user_id" required><br><br>
-		<input type="submit" value="Login" name="loginSubmit">
-    </form>
-</div>
-	
-</body>
-</html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-<?php
-    //leave these unchanged
-	function debugAlertMessage($message)
-	{
-		global $show_debug_alert_messages;
-
-		if ($show_debug_alert_messages) {
-			echo "<script type='text/javascript'>alert('" . $message . "');</script>";
-		}
-	}
-
-	function executePlainSQL($cmdstr)
-	{ //takes a plain (no bound variables) SQL command and executes it
-		//echo "<br>running ".$cmdstr."<br>";
-		global $db_conn, $success;
-
-		$statement = oci_parse($db_conn, $cmdstr);
-		//There are a set of comments at the end of the file that describe some of the OCI specific functions and how they work
-
-		if (!$statement) {
-			echo "<br>Cannot parse the following command: " . $cmdstr . "<br>";
-			$e = OCI_Error($db_conn); // For oci_parse errors pass the connection handle
-			echo htmlentities($e['message']);
-			$success = False;
-		}
-
-		$r = oci_execute($statement, OCI_DEFAULT);
-		if (!$r) {
-			echo "<br>Cannot execute the following command: " . $cmdstr . "<br>";
-			$e = oci_error($statement); // For oci_execute errors pass the statementhandle
-			echo htmlentities($e['message']);
-			$success = False;
-		}
-
-		return $statement;
-	}
-
-
-	function executeBoundSQL($cmdstr, $list)
-	{
-		/* Sometimes the same statement will be executed several times with different values for the variables involved in the query.
-		In this case you don't need to create the statement several times. Bound variables cause a statement to only be
-		parsed once and you can reuse the statement. This is also very useful in protecting against SQL injection.
-		See the sample code below for how this function is used */
-
-		global $db_conn, $success;
-		$statement = oci_parse($db_conn, $cmdstr);
-
-		if (!$statement) {
-			echo "<br>Cannot parse the following command: " . $cmdstr . "<br>";
-			$e = OCI_Error($db_conn);
-			echo htmlentities($e['message']);
-			$success = False;
-		}
-
-		foreach ($list as $tuple) {
-			foreach ($tuple as $bind => $val) {
-				//echo $val;
-				//echo "<br>".$bind."<br>";
-				oci_bind_by_name($statement, $bind, $val);
-				unset($val); //make sure you do not remove this. Otherwise $val will remain in an array object wrapper which will not be recognized by Oracle as a proper datatype
-			}
-
-			$r = oci_execute($statement, OCI_DEFAULT);
-			if (!$r) {
-				echo "<br>Cannot execute the following command: " . $cmdstr . "<br>";
-				$e = OCI_Error($statement); // For oci_execute errors, pass the statementhandle
-				echo htmlentities($e['message']);
-				echo "<br>";
-				$success = False;
-			}
-		}
-	}
-
-	function printResult($result)
-	{ //prints results from a select statement
-		echo "<br>Retrieved data from table demoTable:<br>";
-		echo "<table>";
-		echo "<tr><th>ID</th><th>Name</th></tr>";
-
-		while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
-			echo "<tr><td>" . $row["ID"] . "</td><td>" . $row["NAME"] . "</td></tr>"; //or just use "echo $row[0]"
-		}
-
-		echo "</table>";
-	}
-
-	function handleDisplayOwnerProjects($user_id) 
-	{
-		global $db_conn;
-		$query = " SELECT P.Project_id, P.Project_name,P.Project_status, P.Project_Start_Date, P.Project_End_Date
-		FROM Project P 
-		WHERE P.owner_id = :owner_id AND P.Owner_Phone = :owner_phone";
-
-		$statement = oci_parse($db_conn,$query);
-		oci_bind_by_name($statement,":owner_id", $owner_id);
-		oci_bind_by_name($statement,":owner_phone", $owner_phone);
-
-		
-		if(!oci_execute($statement)) {
-			$e = oci_error($statement);
-			echo "<br>Error Fetching Projects: ".htmlentities($e['message']). "<br>";
-			return [];
-		}
-
-		printResult($statement);
-	}
-
-
-	function connectToDB()
+function connectToDB()
 	{
 		global $db_conn;
 		global $config;
@@ -206,109 +50,110 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		oci_close($db_conn);
 	}
 
+	function debugAlertMessage($message)
+	{
+		global $show_debug_alert_messages;
+
+		if ($show_debug_alert_messages) {
+			echo "<script type='text/php'>alert('" . $message . "');</script>";
+		}
+	}
+
+
+
+	function isUserValid($role,$id,$phone) 
+	{
+		global $db_conn;
+
+		$query = "";
+		if ($role === "Owner") {
+			$query = "SELECT COUNT(*) AS COUNT FROM OwnerEntity WHERE Owner_ID = :id AND Owner_Phone = :phone";
+		}elseif ($role === "Supervisor") {
+			$query = "SELECT COUNT(*) AS COUNT FROM Supervisor WHERE Supervisor_ID = :id AND Supervisor_Phone = :phone";
+
+		}
+
+		$statement = oci_parse($db_conn, $query);
+
+		if (!$statement) {
+			echo "<p style='color:red;'>Cannot parse query: " . htmlentities($query) . "</p>";
+			$e = oci_error($db_conn);
+			echo htmlentities($e['message']);
+			return false;
+		}
+
+		oci_bind_by_name($statement, ":id", $id);
+   		oci_bind_by_name($statement, ":phone", $phone);
+
+		if (!oci_execute($statement)) {
+			$e = oci_error($statement);
+			echo "<p style='color:red;'>Error executing query: " . htmlentities($e['message']) . "</p>";
+			return false;
+		}
+
+		$row = oci_fetch_assoc($statement);
+		return $row['COUNT'] > 0;
+
+			
+		
+	}
+
+	//form submission
+
+	if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['loginSubmit'])) 
+	{
+		$role = $_POST['Role'];
+		$id = $_POST['user_id'];
+		$phone = $_POST['phone'];
+	
+		if (connectToDB()) {
+			if (isUserValid($role, $id, $phone)) {
+				if ($role === "Owner") {
+					header("Location: public_html/ownerpage.php?owner_id=" . urlencode($id));
+				} else {
+					echo "<p style='color:blue; text-align:center;'>Supervisor functionality to be  implemented .</p>";
+				}
+				exit();
+			} else {
+				echo "<p style='color:red; text-align:center;'>Invalid ID or Phone Number. Please try again.</p>";
+			}
+			disconnectFromDB();
+
+		}
+
+		
+	}
+
+
+?>
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Renovation Project Management</title>
+
+</head>
+
+<body>
+	<div style = "text-align: center; margin-top: 200px;">
+	<h1>Welcome</h1>
+	<p> Please select you role and enter your credentials to login.</p>
+	<form method="POST" action="mainpage.php">
+		<label for="Role"> Select your role:</label><br>
+		<select name="Role" id= "Role" required>
+			<option value="Supervisor">Supervisor</option>
+			<option value="Owner">Owner</option>
+        </select><br><br>
+
+		<label for="user_id">Enter your ID:</label><br>
+		<input type="text" id="user_id" name="user_id" required><br><br>
+		<label for ="phone"> Enter Phone Number: </label><br>
+		<input type="text" id="phone" name="phone" required><br><br>
+		<input type="submit" value="Login" name="loginSubmit">
+    </form>
+</div>
+	
+</body>
+</html>
 
 	
-    // unsure to keep or needs to be change for our project
-	function handleUpdateRequest()
-	{
-		global $db_conn;
-
-		$old_name = $_POST['oldName'];
-		$new_name = $_POST['newName'];
-
-		// you need the wrap the old name and new name values with single quotations
-		executePlainSQL("UPDATE demoTable SET name='" . $new_name . "' WHERE name='" . $old_name . "'");
-		oci_commit($db_conn);
-	}
-
-	function handleResetRequest()
-	{
-		global $db_conn;
-		// Drop old table
-		executePlainSQL("DROP TABLE demoTable");
-
-		// Create new table
-		echo "<br> creating new table <br>";
-		executePlainSQL("CREATE TABLE demoTable (id int PRIMARY KEY, name char(30))");
-		oci_commit($db_conn);
-	}
-
-	function handleInsertRequest()
-	{
-		global $db_conn;
-
-		//Getting the values from user and insert data into the table
-		$tuple = array(
-			":bind1" => $_POST['insNo'],
-			":bind2" => $_POST['insName']
-		);
-
-		$alltuples = array(
-			$tuple
-		);
-
-		executeBoundSQL("insert into demoTable values (:bind1, :bind2)", $alltuples);
-		oci_commit($db_conn);
-	}
-
-	function handleCountRequest()
-	{
-		global $db_conn;
-
-		$result = executePlainSQL("SELECT Count(*) FROM demoTable");
-
-		if (($row = oci_fetch_row($result)) != false) {
-			echo "<br> The number of tuples in demoTable: " . $row[0] . "<br>";
-		}
-	}
-
-	function handleDisplayRequest()
-	{
-		global $db_conn;
-		$result = executePlainSQL("SELECT * FROM demoTable");
-		printResult($result);
-	}
-
-	// HANDLE ALL POST ROUTES
-	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
-	function handlePOSTRequest()
-	{
-		if (connectToDB()) {
-			if (array_key_exists('resetTablesRequest', $_POST)) {
-				handleResetRequest();
-			} else if (array_key_exists('updateQueryRequest', $_POST)) {
-				handleUpdateRequest();
-			} else if (array_key_exists('insertQueryRequest', $_POST)) {
-				handleInsertRequest();
-			}
-
-			disconnectFromDB();
-		}
-	}
-
-	// HANDLE ALL GET ROUTES
-	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
-	function handleGETRequest()
-	{
-		if (connectToDB()) {
-			if (array_key_exists('countTuples', $_GET)) {
-				handleCountRequest();
-			} elseif (array_key_exists('displayTuples', $_GET)) {
-				handleDisplayRequest();
-			}
-
-			disconnectFromDB();
-		}
-	}
-
-	if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit'])) {
-		handlePOSTRequest();
-	} else if (isset($_GET['countTupleRequest']) || isset($_GET['displayTuplesRequest'])) {
-		handleGETRequest();
-	}
-
-	// End PHP parsing and send the rest of the HTML content
-	?>
-</body>
-
-</html>

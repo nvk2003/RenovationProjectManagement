@@ -9,8 +9,8 @@ error_reporting(E_ALL);
 // Set some parameters
 
 // Database access configuration
-$config["dbuser"] = "ora_cwl";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a12345678";	// change to 'a' + your student number
+$config["dbuser"] = "ora_jagathi";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a81887028";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
@@ -54,6 +54,24 @@ function connectToDB()
 			echo "<script type='text/php'>alert('" . $message . "');</script>";
 		}
 	}
+    
+    // //to get supervisors for drop down in project
+    // $supervisors = [];
+    // if (connectToDB()) {
+    //     $query = "SELECT Supervisor_ID, Supervisor_Name 
+    //               FROM Supervisor";
+
+    //     $statement = oci_parse($db_conn, $query);
+    //     if (oci_execute($statement)) {
+    //         while ($row = oci_fetch_assoc($statement)) {
+    //             $supervisors[] = $row;
+    //         }
+    //     } else {
+    //         $e = oci_error($statement);
+    //         echo "<p style='color:red;'>Error fetching supervisors: " . htmlentities($e['message']) . "</p>";
+    //     }
+    //     disconnectFromDB();
+    // }
 
     function getOwnerProject($owner_id) 
     {
@@ -124,7 +142,16 @@ function connectToDB()
         #add_review_form {
             margin-top: 20px; 
             position: absolute;
+            left:10px;
+            
         
+        }
+
+        #add_project_form {
+            margin-top: 20px; 
+            position: absolute;
+            right:10px;
+            
         }
 
     </style>
@@ -174,11 +201,11 @@ function connectToDB()
     </div>
 
         
-        <div class = "button-container">
-            <button onclick="toggleForm()"> Add Review </button>
+        <div class = "button-container" style="left: 10px;">
+            <button onclick="toggleForm('add_review_form')"> Add Review </button>
         </div>
 
-        <div id="add_review_form" class="hidden" style="text-align: center;">
+        <div id="add_review_form" class="hidden">
         <h3>Add a Review</h3>
         <form method="POST" action="">
             <label for="Review_ID">Review ID:</label>
@@ -200,9 +227,56 @@ function connectToDB()
         </form>
     </div>
 
+    <div class = "button-container" style="right: 10px;">
+            <button onclick="toggleForm('add_project_form')"> Add Project </button>
+        </div>
+
+    <div id="add_project_form" class="hidden">
+        <h3>Add a Project</h3>
+        <form method="POST" action="">
+            <label for="Project_ID">Project ID:</label>
+            <input type="text" id="project_id" name="project_id" required><br><br>
+
+            <label for="Project_Name">Project Name:</label>
+            <input type="text" id="project_name" name="project_name" required><br><br>
+
+            <label for="Project_Address">Project Address:</label>
+            <input type="text" id="project_address" name="project_address" required><br><br>
+
+            <label for="Start_Date">Start Date:</label>
+            <input type="date" id="project_start_date" name="project_start_date" required><br><br>
+
+            <label for="End_Date">End Date:</label>
+            <input type="date" id="project_end_date" name="project_end_date" required><br><br>
+
+            <label for="Status">Status:</label>
+            <input type="text" id="status" name="status" required><br><br>
+
+            <label for="Supervisor_ID">Supervisor ID:</label>
+            <select id="supervisor_id" name="supervisor_id" required>
+                <option value="" disabled selected>Select a Supervisor</option>
+                <?php foreach ($supervisors as $supervisor): ?>
+                    <option value="<?php echo htmlentities($supervisor['SUPERVISOR_ID']); ?>">
+                        <?php echo htmlentities($supervisor['SUPERVISOR_ID'] . " - " . $supervisor['SUPERVISOR_Name']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select><br><br>
+
+        
+            <!-- <label for="Supervisor_Phone">Supervisor Phone:</label>
+            <input type="text" id="supervisor_phone" name="supervisor_phone" required><br><br> -->
+
+            <label for="Budget_ID">Budget ID:</label>
+            <input type="text" id="budget_id" name="budget_id" required><br><br>
+
+            <button type="submit" name="addProjectSubmit">Submit Project</button>
+
+        </form>
+    </div>
+
     <script>
-        function toggleForm() {
-            var form = document.getElementById("add_review_form");
+        function toggleForm(formid) {
+            var form = document.getElementById(formid);
             if (form.classList.contains("hidden")) {
                 form.classList.remove("hidden");
             } else {

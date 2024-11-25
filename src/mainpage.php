@@ -1,7 +1,7 @@
 
 <?php
 // The preceding tag tells the web server to parse the following text as PHP
-// rather than HTML (the default)chcgoogl
+// rather than HTML (the default)
 
 // The following 3 lines allow PHP errors to be displayed along with the page
 // content. Delete or comment out this block when it's no longer needed.
@@ -12,8 +12,8 @@ error_reporting(E_ALL);
 // Set some parameters
 
 // Database access configuration
-$config["dbuser"] = "ora_cwl";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a12345678";	// change to 'a' + your student number
+$config["dbuser"] = "ora_blahblahblahh";			// change "cwl" to your own CWL
+$config["dbpassword"] = "ablahhhablahhhalbllahhhhalahalahalah";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
@@ -21,7 +21,55 @@ $success = true;	// keep track of errors so page redirects only if there are no 
 
 $show_debug_alert_messages = False; // show which methods are being triggered (see debugAlertMessage())
 
-function connectToDB()
+// The next tag tells the web server to stop parsing the text as PHP. Use the
+// pair of tags wherever the content switches to PHP
+?>
+
+
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Renovation Project Management</title>
+
+</head>
+
+<body>
+	<div style = "text-align: center; margin-top: 200px;">
+	<h1>Welcome</h1>
+	<p> Please select you role and enter your credentials to login.</p>
+	<form method="POST" action="mainpage.php">
+		<label for="Role"> Select your role:</label><br>
+		<select name="Role" id= "Role" required>
+			<option value="Supervisor">Supervisor</option>
+			<option value="Owner">Owner</option>
+        </select><br><br>
+
+		<label for="user_id">Enter your ID:</label><br>
+		<input type="text" id="user_id" name="user_id" required><br><br>
+		<label for ="phone"> Enter Phone Number: </label><br>
+		<input type="text" id="phone" name="phone" required><br><br>
+		<input type="submit" value="Login" name="loginSubmit">
+    </form>
+</div>
+
+
+
+
+
+	<?php
+
+	function debugAlertMessage($message)
+	{
+		global $show_debug_alert_messages;
+
+		if ($show_debug_alert_messages) {
+			echo "<script type='text/php'>alert('" . $message . "');</script>";
+		}
+	}
+
+
+	function connectToDB()
 	{
 		global $db_conn;
 		global $config;
@@ -32,6 +80,7 @@ function connectToDB()
 		$db_conn = oci_connect($config["dbuser"], $config["dbpassword"], $config["dbserver"]);
 
 		if ($db_conn) {
+			// echo "<p style='color:green;'>Connected to the database successfully!</p>";
 			debugAlertMessage("Database is Connected");
 			return true;
 		} else {
@@ -42,6 +91,30 @@ function connectToDB()
 		}
 	}
 
+	function initializeDatabase() {
+		global $db_conn;
+	
+		$sql = "
+		start script.sql;
+		";
+	
+		$statements = explode(";", $sql); // Split SQL into individual statements
+	
+		foreach ($statements as $statement) {
+			if (trim($statement)) {
+				$parsedStatement = oci_parse($db_conn, $statement);
+	
+				if (!$parsedStatement || !oci_execute($parsedStatement)) {
+					$e = oci_error($parsedStatement);
+					echo "<p style='color:red;'>Error executing statement: " . htmlentities($e['message']) . "</p>";
+				} else {
+					echo "<p style='color:green;'>Statement executed successfully: " . htmlentities($statement) . "</p>";
+				}
+			}
+		}
+	}
+	
+
 	function disconnectFromDB()
 	{
 		global $db_conn;
@@ -50,14 +123,7 @@ function connectToDB()
 		oci_close($db_conn);
 	}
 
-	function debugAlertMessage($message)
-	{
-		global $show_debug_alert_messages;
-
-		if ($show_debug_alert_messages) {
-			echo "<script type='text/php'>alert('" . $message . "');</script>";
-		}
-	}
+	
 
 
 
@@ -109,7 +175,7 @@ function connectToDB()
 		if (connectToDB()) {
 			if (isUserValid($role, $id, $phone)) {
 				if ($role === "Owner") {
-					header("Location: public_html/ownerpage.php?owner_id=" . urlencode($id));
+					header("Location: ownerpage.php?owner_id=" . urlencode($id));
 				} else {
 					echo "<p style='color:blue; text-align:center;'>Supervisor functionality to be  implemented .</p>";
 				}
@@ -124,36 +190,10 @@ function connectToDB()
 		
 	}
 
-
-?>
-<!DOCTYPE html>
-<html>
-
-<head>
-	<title>Renovation Project Management</title>
-
-</head>
-
-<body>
-	<div style = "text-align: center; margin-top: 200px;">
-	<h1>Welcome</h1>
-	<p> Please select you role and enter your credentials to login.</p>
-	<form method="POST" action="mainpage.php">
-		<label for="Role"> Select your role:</label><br>
-		<select name="Role" id= "Role" required>
-			<option value="Supervisor">Supervisor</option>
-			<option value="Owner">Owner</option>
-        </select><br><br>
-
-		<label for="user_id">Enter your ID:</label><br>
-		<input type="text" id="user_id" name="user_id" required><br><br>
-		<label for ="phone"> Enter Phone Number: </label><br>
-		<input type="text" id="phone" name="phone" required><br><br>
-		<input type="submit" value="Login" name="loginSubmit">
-    </form>
-</div>
+	?>
 	
 </body>
 </html>
+
 
 	

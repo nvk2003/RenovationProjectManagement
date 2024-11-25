@@ -9,106 +9,14 @@ error_reporting(E_ALL);
 // Set some parameters
 
 // Database access configuration
-$config["dbuser"] = "ora_jagathi";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a81887028";	// change to 'a' + your student number
+$config["dbuser"] = "ora_oollalllalalalalal";			// change "cwl" to your own CWL
+$config["dbpassword"] = "aollaaollaoalaoalaoalaoao";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
 $success = true;	// keep track of errors so page redirects only if there are no errors
 
 $show_debug_alert_messages = False; // show which methods are being triggered (see debugAlertMessage())
-
-function connectToDB()
-	{
-		global $db_conn;
-		global $config;
-
-		
-		// $db_conn = oci_connect("ora_cwl", "a12345678", "dbhost.students.cs.ubc.ca:1522/stu");
-		$db_conn = oci_connect($config["dbuser"], $config["dbpassword"], $config["dbserver"]);
-
-		if ($db_conn) {
-			debugAlertMessage("Database is Connected");
-			return true;
-		} else {
-			debugAlertMessage("Cannot connect to Database");
-			$e = OCI_Error(); // For oci_connect errors pass no handle
-			echo htmlentities($e['message']);
-			return false;
-		}
-	}
-
-	function disconnectFromDB()
-	{
-		global $db_conn;
-
-		debugAlertMessage("Disconnect from Database");
-		oci_close($db_conn);
-	}
-
-    function debugAlertMessage($message)
-	{
-		global $show_debug_alert_messages;
-
-		if ($show_debug_alert_messages) {
-			echo "<script type='text/php'>alert('" . $message . "');</script>";
-		}
-	}
-    
-    // //to get supervisors for drop down in project
-    // $supervisors = [];
-    // if (connectToDB()) {
-    //     $query = "SELECT Supervisor_ID, Supervisor_Name 
-    //               FROM Supervisor";
-
-    //     $statement = oci_parse($db_conn, $query);
-    //     if (oci_execute($statement)) {
-    //         while ($row = oci_fetch_assoc($statement)) {
-    //             $supervisors[] = $row;
-    //         }
-    //     } else {
-    //         $e = oci_error($statement);
-    //         echo "<p style='color:red;'>Error fetching supervisors: " . htmlentities($e['message']) . "</p>";
-    //     }
-    //     disconnectFromDB();
-    // }
-
-    function getOwnerProject($owner_id) 
-    {
-        global $db_conn;
-        $query = "SELECT Project_ID,Project_Name,Project_Address,Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID
-                  FROM Project
-                  WHERE Owner_ID = :owner_id";
-        
-        $statement = oci_parse($db_conn, $query);
-        oci_bind_by_name($statement, ":owner_id", $owner_id);
-         
-        if (!oci_execute($statement)) {
-			$e = oci_error($statement);
-			echo "<p style='color:red;'>Error fetching projects: " . htmlentities($e['message']) . "</p>";
-			return [];
-		}
-
-        $projects = [];
-         while ($row = oci_fetch_assoc($statement)) {
-        $projects[] = $row;
-        }
-
-        return $projects;
-
-    }
-
-    $owner_id = '0001';
- 
-    
-    if (connectToDB()) {
-        $projects = getOwnerProject($owner_id);
-        disconnectFromDB();
-    } else {
-        $projects = [];
-    }
-    
-    
 ?>
 
 <!DOCTYPE html>
@@ -158,47 +66,211 @@ function connectToDB()
         
 </head>
 <body>
-    <div style="text-align: center;">
-        <h1>Owner Dashboard</h1>
-        <h2>Your Projects</h2>
-        <table style="margin: 0 auto;">
-            <thead>
-            <tr>
-                <th>Project ID</th>
-                <th>Project Name</th>
-                <th>Project Address</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Status</th>
-                <th>Supervisor Id</th>
-                <th>Supervisor Phone</th>
-                <th>Budget</th>
-            </tr>
-            </thead>
-            <tbody>
-                 <?php if (!empty($projects)): ?>
-                     <?php foreach ($projects as $project): ?>
-                    <tr>
-                        <td><?php echo htmlentities($project['PROJECT_ID']); ?></td>
-                        <td><?php echo htmlentities($project['PROJECT_NAME']); ?></td>
-                        <td><?php echo htmlentities($project['PROJECT_ADDRESS']); ?></td>
-                        <td><?php echo htmlentities($project['PROJECT_START_DATE']); ?></td>
-                        <td><?php echo htmlentities($project['PROJECT_END_DATE']); ?></td>
-                        <td><?php echo htmlentities($project['PROJECT_STATUS']); ?></td>
-                        <td><?php echo htmlentities($project['SUPERVISOR_ID']); ?></td>
-                        <td><?php echo htmlentities($project['SUPERVISOR_PHONE']); ?></td>
-                        <td><?php echo htmlentities($project['BUDGET_ID']); ?></td>
 
-                    </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <tr>
-                    <td colspan="9">No projects found.</td>
-                </tr>
-            <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
+
+
+
+
+    <?php
+
+    function connectToDB()
+    {
+        global $db_conn;
+        global $config;
+
+        
+        // $db_conn = oci_connect("ora_cwl", "a12345678", "dbhost.students.cs.ubc.ca:1522/stu");
+        $db_conn = oci_connect($config["dbuser"], $config["dbpassword"], $config["dbserver"]);
+
+        if ($db_conn) {
+            debugAlertMessage("Database is Connected");
+            return true;
+        } else {
+            debugAlertMessage("Cannot connect to Database");
+            $e = OCI_Error(); // For oci_connect errors pass no handle
+            echo htmlentities($e['message']);
+            return false;
+        }
+    }
+
+    function disconnectFromDB()
+    {
+        global $db_conn;
+
+        debugAlertMessage("Disconnect from Database");
+        oci_close($db_conn);
+    }
+
+    function debugAlertMessage($message)
+    {
+        global $show_debug_alert_messages;
+
+        if ($show_debug_alert_messages) {
+            echo "<script type='text/php'>alert('" . $message . "');</script>";
+        }
+    }
+
+    // //to get supervisors for drop down in project
+    // $supervisors = [];
+    // if (connectToDB()) {
+    //     $query = "SELECT Supervisor_ID, Supervisor_Name 
+    //               FROM Supervisor";
+
+    //     $statement = oci_parse($db_conn, $query);
+    //     if (oci_execute($statement)) {
+    //         while ($row = oci_fetch_assoc($statement)) {
+    //             $supervisors[] = $row;
+    //         }
+    //     } else {
+    //         $e = oci_error($statement);
+    //         echo "<p style='color:red;'>Error fetching supervisors: " . htmlentities($e['message']) . "</p>";
+    //     }
+    //     disconnectFromDB();
+    // }
+
+    function getOwnerProject($owner_id) 
+    {
+        global $db_conn;
+        // Changed $query to $sql
+        $sql = "SELECT Project_ID, Project_Name, Project_Address, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID
+                FROM Project
+                WHERE Owner_ID = :owner_id";
+        
+        $statement = oci_parse($db_conn, $sql); // Changed $query to $sql
+        oci_bind_by_name($statement, ":owner_id", $owner_id);
+        // echo "<p style='color:blue; text-align:center;'>Owner ID In getOwnerProject: " . htmlentities($owner_id) . "</p>"; // Should comment it out
+        
+        if (!oci_execute($statement)) {
+            $e = oci_error($statement);
+            echo "<p style='color:red;'>Error fetching projects: " . htmlentities($e['message']) . "</p>";
+            return [];
+        }
+
+        $projects = [];
+        while ($row = oci_fetch_assoc($statement)) {
+        $projects[] = $row;
+        }
+
+        // foreach ($projects as $project) {
+        //     echo "<p style='color:green; text-align:center;'>Project ID: " . htmlentities($project['Project_ID']) . ", Project Name: " . htmlentities($project['Project_Name']) . "</p>";
+        // }
+
+        // echo "<p style='color:blue; text-align:center;'>Number of projects: " . count($projects) . "</p>";
+
+        
+
+
+        return $projects;
+
+    }
+
+    // $owner_id = '0001';
+
+
+    if (connectToDB()) {
+
+        if (isset($_GET['owner_id'])) {
+        $owner_id = $_GET['owner_id'];
+        // echo "<p style='color:blue; text-align:center;'>Owner ID: " . htmlentities($owner_id) . "</p>"; // Debug statement to verify the owner_id
+        } 
+        // else {
+        //     echo "<p style='color:red;'>Owner ID not set!</p>"; // should comment this and the above echo statements
+        // }
+
+        $projects = getOwnerProject($owner_id);
+        // <p>Total Projects: echo !empty($projects) ? count($projects) : 0;
+
+        disconnectFromDB();
+    } else {
+        $projects = [];
+    }
+
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addReviewSubmit'])) {
+        $Review_ID = $_POST['review_id'];
+        $Review_Date = $_POST['review_date'];
+        $Review_Rating = $_POST['review_rating'];
+        $Review_Comment = $_POST['review_comment'];
+        $Owner_ID = $_POST['owner_id'];
+        $Owner_Phone = $_POST['owner_phone'];
+
+        if (connectToDB()) {
+        
+            $query = "INSERT INTO Review (Review_ID, Review_Date, Review_Rating, Review_Comment, Owner_ID, Owner_Phone)
+                    VALUES (:review_id, :review_date, :review_rating, :review_comment, :owner_id, :owner_phone)";
+            $statement = oci_parse($db_conn, $query);
+
+            oci_bind_by_name($statement, ":review_id", $Review_ID);
+            oci_bind_by_name($statement, ":review_date", $Review_Date);
+            oci_bind_by_name($statement, ":review_rating", $Review_Rating);
+            oci_bind_by_name($statement, ":review_comment", $Review_Comment);
+            oci_bind_by_name($statement, ":owner_id", $Owner_ID);
+            oci_bind_by_name($statement, ":owner_phone", $Owner_Phone);
+            
+            
+
+            if (oci_execute($statement)) {
+                echo "<p style='color:green; text-align:center;'>Review added successfully!</p>";
+            } else {
+                $e = oci_error($statement);
+                echo "<p style='color:red; text-align:center;'>Error adding review: " . htmlentities($e['message']) . "</p>";
+            }
+
+            disconnectFromDB();
+        }
+    }
+    ?>
+
+
+
+
+
+
+
+
+
+    <div style="text-align: center;">
+    <h1>Owner Dashboard</h1>
+    <h2>Your Projects</h2>
+    <!-- <p>Total Projects: <?php echo !empty($projects) ? count($projects) : 0; ?></p> -->
+    <table style="margin: 0 auto;">
+        <thead>
+        <tr>
+            <th>Project ID</th>
+            <th>Project Name</th>
+            <th>Project Address</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Status</th>
+            <th>Supervisor Id</th>
+            <th>Supervisor Phone</th>
+            <th>Budget</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php if (!empty($projects)): ?>
+            <?php foreach ($projects as $project): ?>
+            <tr>
+                <td><?php echo htmlentities($project['PROJECT_ID']); ?></td>
+                <td><?php echo htmlentities($project['PROJECT_NAME']); ?></td>
+                <td><?php echo htmlentities($project['PROJECT_ADDRESS']); ?></td>
+                <td><?php echo htmlentities($project['PROJECT_START_DATE']); ?></td>
+                <td><?php echo htmlentities($project['PROJECT_END_DATE']); ?></td>
+                <td><?php echo htmlentities($project['PROJECT_STATUS']); ?></td>
+                <td><?php echo htmlentities($project['SUPERVISOR_ID']); ?></td>
+                <td><?php echo htmlentities($project['SUPERVISOR_PHONE']); ?></td>
+                <td><?php echo htmlentities($project['BUDGET_ID']); ?></td>
+            </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="9">No projects found.</td>
+            </tr>
+        <?php endif; ?>
+        </tbody>
+    </table>
+</div>
+
 
         
         <div class = "button-container" style="left: 10px;">
@@ -284,42 +356,14 @@ function connectToDB()
             }
         }
     </script>
+
+
+
+
+
+
+
+    
       
 </body>
 </html>
-
-<?php
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addReviewSubmit'])) {
-    $Review_ID = $_POST['review_id'];
-    $Review_Date = $_POST['review_date'];
-    $Review_Rating = $_POST['review_rating'];
-    $Review_Comment = $_POST['review_comment'];
-    $Owner_ID = $_POST['owner_id'];
-    $Owner_Phone = $_POST['owner_phone'];
-
-    if (connectToDB()) {
-       
-        $query = "INSERT INTO Review (Review_ID, Review_Date, Review_Rating, Review_Comment, Owner_ID, Owner_Phone)
-                  VALUES (:review_id, :review_date, :review_rating, :review_comment, :owner_id, :owner_phone)";
-        $statement = oci_parse($db_conn, $query);
-
-        oci_bind_by_name($statement, ":review_id", $Review_ID);
-        oci_bind_by_name($statement, ":review_date", $Review_Date);
-        oci_bind_by_name($statement, ":review_rating", $Review_Rating);
-        oci_bind_by_name($statement, ":review_comment", $Review_Comment);
-        oci_bind_by_name($statement, ":owner_id", $Owner_ID);
-        oci_bind_by_name($statement, ":owner_phone", $Owner_Phone);
-        
-        
-
-        if (oci_execute($statement)) {
-            echo "<p style='color:green; text-align:center;'>Review added successfully!</p>";
-        } else {
-            $e = oci_error($statement);
-            echo "<p style='color:red; text-align:center;'>Error adding review: " . htmlentities($e['message']) . "</p>";
-        }
-
-        disconnectFromDB();
-    }
-}
-?>

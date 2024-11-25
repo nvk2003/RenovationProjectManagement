@@ -9,8 +9,8 @@ error_reporting(E_ALL);
 // Set some parameters
 
 // Database access configuration
-$config["dbuser"] = "ora_oollalllalalalalal";			// change "cwl" to your own CWL
-$config["dbpassword"] = "aollaaollaoalaoalaoalaoao";	// change to 'a' + your student number
+$config["dbuser"] = "ora_jagathi";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a81887028";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
@@ -58,9 +58,17 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
         #add_project_form {
             margin-top: 20px; 
             position: absolute;
-            right:10px;
+            right:40px;
             
         }
+
+        #delete_project_form {
+            margin-top: 30px; 
+            position: absolute;
+            right:150px;
+            
+        }
+
 
     </style>
         
@@ -299,7 +307,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
         </form>
     </div>
 
-    <div class = "button-container" style="right: 10px;">
+    <div class = "button-container" style="right: 30px;">
             <button onclick="toggleForm('add_project_form')"> Add Project </button>
         </div>
 
@@ -345,6 +353,22 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
         </form>
     </div>
+
+    <div class = "button-container" style="right: 150px;">
+            <button onclick="toggleForm('delete_project_form')"> Delete Project </button>
+        </div>
+
+    <div id="delete_project_form" class="hidden">
+        <h3>Delete Project</h3>
+        <form method="POST" action="">
+            <label for="Project_ID">Project ID:</label>
+            <input type="text" id="project_id" name="project_id" required><br><br>
+
+            <button type="submit" name="deleteProjectSubmit">Delete Project</button>
+
+        </form>
+    </div>
+
 
     <script>
         function toggleForm(formid) {

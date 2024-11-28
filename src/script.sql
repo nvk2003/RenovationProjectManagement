@@ -147,8 +147,8 @@ CREATE TABLE Project (
     Owner_Phone CHAR(10) NOT NULL,
     PRIMARY KEY (Project_ID),
     FOREIGN KEY (Supervisor_ID, Supervisor_Phone) REFERENCES Supervisor(Supervisor_ID, Supervisor_Phone),
-    FOREIGN KEY (Budget_ID) REFERENCES Budget,
-    FOREIGN KEY (Owner_ID, Owner_Phone) REFERENCES OwnerEntity(Owner_ID, Owner_Phone)
+    FOREIGN KEY (Owner_ID, Owner_Phone) REFERENCES OwnerEntity(Owner_ID, Owner_Phone),
+    FOREIGN KEY (Budget_ID) REFERENCES Budget ON DELETE CASCADE
 );
 
 CREATE TABLE ResidentialProject (
@@ -156,14 +156,14 @@ CREATE TABLE ResidentialProject (
 	Property_Type VARCHAR(20),
 	No_of_rooms_To_Renovate INTEGER,
 	PRIMARY KEY (Project_ID),
-	FOREIGN KEY (Project_ID) REFERENCES Project
+	FOREIGN KEY (Project_ID) REFERENCES Project ON DELETE CASCADE
 );
 
 CREATE TABLE CommercialProject (
 	Project_ID VARCHAR(20),
 	Business_Type VARCHAR(20),
 	PRIMARY KEY (Project_ID),
-	FOREIGN KEY (Project_ID) REFERENCES Project
+	FOREIGN KEY (Project_ID) REFERENCES Project ON DELETE CASCADE
 );
 
 
@@ -298,6 +298,11 @@ INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Bud
 INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B008', 85000.00, 95000.00, 16000.00, 111000.00, 9000.00);
 INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B009', 110000.00, 120000.00, 22000.00, 142000.00, 15000.00);
 INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B010', 60000.00, 70000.00, 13000.00, 83000.00, 7000.00);
+INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B011', 60000.00, 70000.00, 13000.00, 83000.00, 7000.00);
+INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B012', 60000.00, 70000.00, 13000.00, 83000.00, 7000.00);
+INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B013', 60000.00, 70000.00, 13000.00, 83000.00, 7000.00);
+INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B014', 60000.00, 70000.00, 13000.00, 83000.00, 7000.00);
+INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B015', 60000.00, 70000.00, 13000.00, 83000.00, 7000.00);
 
 
 -- Tuples for OwnerEntity

@@ -12,8 +12,8 @@ error_reporting(E_ALL);
 // Set some parameters
 
 // Database access configuration
-$config["dbuser"] = "ora_blahblahblahh";			// change "cwl" to your own CWL
-$config["dbpassword"] = "ablahhhablahhhalbllahhhhalahalahalah";	// change to 'a' + your student number
+$config["dbuser"] = "ora_jagathi";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a81887028";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
@@ -177,7 +177,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 				if ($role === "Owner") {
 					header("Location: ownerpage.php?owner_id=" . urlencode($id));
 				} else {
-					echo "<p style='color:blue; text-align:center;'>Supervisor functionality to be  implemented .</p>";
+					header("Location: supervisorpage.php?supervisor_id=" . urlencode($id));
 				}
 				exit();
 			} else {

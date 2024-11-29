@@ -105,7 +105,7 @@ function connectToDB()
         return true;
     } else {
         debugAlertMessage("Cannot connect to Database");
-        $e = OCI_Error(); // For oci_connect errors pass no handle
+        $e = OCI_Error(); 
         echo htmlentities($e['message']);
         return false;
     }
@@ -132,15 +132,14 @@ function debugAlertMessage($message)
 
 
 function executePlainSQL($cmdstr) 
-{ //takes a plain (no bound variables) SQL command and executes it
-    //echo "<br>running ".$cmdstr."<br>";
+{ 
     global $db_conn, $success;
 
     $statement = oci_parse($db_conn, $cmdstr);
 
     if (!$statement) {
         echo "<br>Cannot parse the following command: " . $cmdstr . "<br>";
-        $e = oci_error($db_conn); // For OCIParse errors pass the connection handle
+        $e = oci_error($db_conn); 
         echo htmlentities($e['message']);
         $success = False;
     }
@@ -148,7 +147,7 @@ function executePlainSQL($cmdstr)
     $r = oci_execute($statement, OCI_DEFAULT);
     if (!$r) {
         echo "<br>Cannot execute the following command: " . $cmdstr . "<br>";
-        $e = oci_error($statement); // For OCIExecute errors pass the statementhandle
+        $e = oci_error($statement); 
         echo htmlentities($e['message']);
         $success = False;
     }
@@ -159,7 +158,7 @@ function executePlainSQL($cmdstr)
 
     
 function printResult($result) 
-{ //prints results from a select statement
+{ 
     echo "<table>";
     echo "<tr>";
     $ncols = oci_num_fields($result);
@@ -233,9 +232,6 @@ if (connectToDB()) {
     $supervisor_id = $_GET['supervisor_id'];
    
     } 
-
-    // $projects = handleFilterRequest($supervisor_id);
-    // <p>Total Projects: echo !empty($projects) ? count($projects) : 0;
 
     disconnectFromDB();
 } else {

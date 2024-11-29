@@ -9,8 +9,8 @@ error_reporting(E_ALL);
 // Set some parameters
 
 // Database access configuration
-$config["dbuser"] = "ora_jagathi";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a81887028";	// change to 'a' + your student number
+$config["dbuser"] = "ora_nvk2003";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a60336625";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
@@ -49,6 +49,14 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
            
             margin: 20px;
         }
+
+        .filter-container {
+            padding-top: 20px;
+            margin: 20px;
+            padding-bottom: 40px;
+        }
+
+        
 
         
     </style>
@@ -119,6 +127,37 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 }
 
 
+function executeBoundSQL($cmdstr, $list)
+	{	global $db_conn, $success;
+		$statement = oci_parse($db_conn, $cmdstr);
+
+		if (!$statement) {
+			echo "<br>Cannot parse the following command: " . $cmdstr . "<br>";
+			$e = OCI_Error($db_conn);
+			echo htmlentities($e['message']);
+			$success = False;
+		}
+
+		foreach ($list as $tuple) {
+			foreach ($tuple as $bind => $val) {
+				//echo $val;
+				//echo "<br>".$bind."<br>";
+				oci_bind_by_name($statement, $bind, $val);
+				unset($val); //make sure you do not remove this. Otherwise $val will remain in an array object wrapper which will not be recognized by Oracle as a proper datatype
+			}
+
+			$r = oci_execute($statement, OCI_DEFAULT);
+			if (!$r) {
+				echo "<br>Cannot execute the following command: " . $cmdstr . "<br>";
+				$e = OCI_Error($statement); // For oci_execute errors, pass the statementhandle
+				echo htmlentities($e['message']);
+				echo "<br>";
+				$success = False;
+			}
+		}
+	}
+
+
     function printResult($result) 
     { 
     echo "<table>";
@@ -157,8 +196,9 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
     </form>
 </div>
 
+
+<!-- View Budget Details Button -->
 <div class="form-container">
-    
         <h3>View Project and Budget Details</h3>
         <form method="POST" action="">
             <label for="project_id">Enter Project ID:</label>
@@ -167,6 +207,17 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
             <button type="submit" name="viewProjectSubmit">View Details</button>
         </form>
     </div>	
+
+
+    <div class="filter-container">
+    <h3>Filter Projects by Contractor Fees</h3>
+    <form method="POST" action="">
+        <label for="threshold">Find the projects that have a Contrator Fees over (in $):</label>
+        <input type="number" id="threshold" name="threshold" step="1" required>
+        <br><br>
+        <button type="submit" name="filterContractorFees">Submit</button>
+    </form>
+</div>
 
 
 
@@ -229,6 +280,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
                 // Execute the select query
                 oci_execute($select_stmt);
+                echo "<h3 style='text-align: center;'>Budget Details for Project ID: " . htmlentities($project_id) . "</h3>";
                 echo "<table>";
             echo "<tr>
                     <th>Project ID</th>
@@ -291,10 +343,79 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
     }
   
 }
-
-
 ?>
 </div>
+
+
+<!-- AGGREGATION WITH HAVING -->
+
+<?php
+if (isset($_POST['filterContractorFees'])) {
+    // Get the input threshold value
+    $threshold = $_POST['threshold'];
+    $owner_id = isset($_GET['owner_id']) ? $_GET['owner_id'] : null;
+
+    // SQL query to aggregate contractor fees for the logged-in owner
+    $query = "
+        SELECT 
+            p.Project_ID, 
+            p.Project_Name, 
+            SUM(b.Budget_Contractor_Fees) AS Total_Contractor_Fees
+        FROM 
+            Project p
+        INNER JOIN 
+            Budget b ON p.Budget_ID = b.Budget_ID
+        WHERE 
+            p.Owner_ID = :owner_id
+        GROUP BY 
+            p.Project_ID, p.Project_Name
+        HAVING 
+            SUM(b.Budget_Contractor_Fees) > :threshold
+    ";
+
+
+    // // Debugging: Print query and parameters
+    // echo "<p>Query: $query</p>";
+    // echo "<p>Owner ID: $owner_id</p>";
+    // echo "<p>Threshold: $threshold</p>";
+
+
+    // Prepare and execute the query
+    $stmt = oci_parse($db_conn, $query);
+
+    // Bind parameters
+    oci_bind_by_name($stmt, ":owner_id", $owner_id); 
+    oci_bind_by_name($stmt, ":threshold", $threshold);
+
+
+    if (oci_execute($stmt)) {
+        echo "<h3 style='text-align: center;'>Projects with Contractor Fees Greater Than $" . htmlentities($threshold) . "</h3>";
+
+        // Start table and set the headers
+        echo "<table border='1' style='width: 80%; margin: 20px auto;'>";
+        echo "<tr><th>Project ID</th><th>Project Name</th><th>Total Contractor Fees</th></tr>";
+
+        // Loop through the results
+        while ($row = oci_fetch_assoc($stmt)) {
+            echo "<tr>";
+            echo "<td>" . htmlentities($row['PROJECT_ID']) . "</td>";
+            echo "<td>" . htmlentities($row['PROJECT_NAME']) . "</td>";
+            echo "<td>" . number_format($row['TOTAL_CONTRACTOR_FEES'], 2) . "</td>";
+            echo "</tr>";
+        }
+
+        echo "</table>";
+    } else {
+        // Handle errors
+        $e = oci_error($stmt);
+        echo "<p style='color: red; text-align: center;'>Error: " . htmlentities($e['message']) . "</p>";
+    }
+}
+?>
+
+
+
+
 
 
 

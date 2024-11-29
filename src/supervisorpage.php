@@ -166,7 +166,13 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
     </form>
 </div>
 
-
+<div class="filter-container">
+    <form method="POST" action="">
+        <button type="submit" name="nestedQuerySubmit" margin: 20px;>
+            View Supervisors Working on High Cost Projects
+        </button>
+    </form>
+</div>
 
 
 
@@ -429,6 +435,38 @@ if (isset($_POST['aggregationQuerySubmit'])) {
         $groupby_result = executePlainSQL($groupby_sql);
         printResult($groupby_result);
 
+    }
+}
+
+
+// Nested Aggregation with GROUP BY
+
+if (isset($_POST['nestedQuerySubmit'])) {
+    if (connectToDB()) {
+        // Query: Find supervisors managing projects where the total cost exceeds the global average total cost
+        $nested_query = "
+            SELECT  S.Supervisor_ID, S.Supervisor_Phone, ROUND(AVG(B.BUDGET_TOTAL_COST), 2) AS Avg_Project_Cost
+            FROM Supervisor S
+            INNER JOIN Project P ON S.Supervisor_ID = P.Supervisor_ID
+            INNER JOIN  Budget B ON P.Budget_ID = B.Budget_ID
+            GROUP BY S.Supervisor_ID, S.Supervisor_Phone
+            HAVING AVG(B.BUDGET_TOTAL_COST) > (
+                                              SELECT AVG(B2.BUDGET_TOTAL_COST)
+                                              FROM Budget B2
+                                              )
+        ";
+
+        // Execute the query
+        $nested_result = executePlainSQL($nested_query);
+
+        echo "<h3 style='text-align: center;'>Supervisors managing projects with total cost higher that average project cost</h3>";
+
+
+        if ($nested_result) {
+            printResult($nested_result);
+        } else {
+            echo "<p style='color: red; text-align: center;'>No results found.</p>";
+        }
     }
 }
 

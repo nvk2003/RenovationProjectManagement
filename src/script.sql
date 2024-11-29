@@ -303,6 +303,15 @@ INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Bud
 INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B013', 60000.00, 70000.00, 13000.00, 83000.00, 7000.00);
 INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B014', 60000.00, 70000.00, 13000.00, 83000.00, 7000.00);
 INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B015', 60000.00, 70000.00, 13000.00, 83000.00, 7000.00);
+INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B016', 50000.00, 60000.00, 10000.00, 70000.00, 5000.00);
+INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B017', 80000.00, 90000.00, 15000.00, 105000.00, 10000.00);
+INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B018', 100000.00, 110000.00, 20000.00, 130000.00, 15000.00);
+INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B019', 120000.00, 130000.00, 25000.00, 155000.00, 20000.00);
+INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B020', 90000.00, 100000.00, 18000.00, 118000.00, 12000.00);
+INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B021', 70000.00, 80000.00, 12000.00, 92000.00, 8000.00);
+INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B022', 95000.00, 105000.00, 17000.00, 122000.00, 10000.00);
+INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B023', 85000.00, 95000.00, 16000.00, 111000.00, 9000.00);
+INSERT INTO Budget(Budget_ID, Budget_Material_Cost, Budget_Initial_Estimate, Budget_Contractor_Fees, Budget_Total_Cost, Budget_Wage_Worker_Cost) VALUES ('B024', 110000.00, 120000.00, 22000.00, 142000.00, 15000.00);
 
 
 -- Tuples for OwnerEntity
@@ -326,12 +335,39 @@ INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Dat
 INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P010', '707 Redwood St', 'Redwood Hotel', '2023-10-01', '2024-12-15', 'In Progress', 'S005', '0123456789', 'B010', 'O005', '5432109876');
 
 
+-- Residential Projects
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone)
+VALUES ('P011', '123 Maple Street', 'Maple Street Renovation', '2024-01-01', '2024-03-01', 'In Progress', 'S001', '6789012345', 'B011', 'O001', '9876543210');
+
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone)
+VALUES ('P012', '456 Pine Avenue', 'Pine Avenue Villa', '2024-02-01', '2024-04-15', 'Pending', 'S001', '6789012345', 'B012', 'O002', '8765432109');
+
+-- Commercial Projects
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone)
+VALUES ('P013', '789 Elm Drive', 'Elm Drive Mall', '2024-01-15', '2024-06-30', 'Completed', 'S001', '6789012345', 'B013', 'O003', '7654321098');
+
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone)
+VALUES ('P014', '101 Cedar Lane', 'Cedar Lane Office', '2024-03-01', '2024-05-20', 'In Progress', 'S001', '6789012345', 'B014', 'O004', '6543210987');
+
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone)
+VALUES ('P015', '202 Oak Street', 'Oak Street Warehouse', '2024-04-01', '2024-07-15', 'Pending', 'S001', '6789012345', 'B015', 'O005', '5432109876');
+
+
+
+
+
 -- Tuples for Residential Project
 INSERT INTO ResidentialProject(Project_ID, Property_Type, No_of_rooms_To_Renovate) VALUES ('P001', 'Single Family', 3);
 INSERT INTO ResidentialProject(Project_ID, Property_Type, No_of_rooms_To_Renovate) VALUES ('P004', 'Villa', 5);
 INSERT INTO ResidentialProject(Project_ID, Property_Type, No_of_rooms_To_Renovate) VALUES ('P006', 'Condo', 2);
 INSERT INTO ResidentialProject(Project_ID, Property_Type, No_of_rooms_To_Renovate) VALUES ('P007', 'Townhouse', 4);
 INSERT INTO ResidentialProject(Project_ID, Property_Type, No_of_rooms_To_Renovate) VALUES ('P008', 'Luxury Villa', 7);
+INSERT INTO ResidentialProject(Project_ID, Property_Type, No_of_rooms_To_Renovate)
+VALUES ('P011', 'Single Family', 4);
+
+INSERT INTO ResidentialProject(Project_ID, Property_Type, No_of_rooms_To_Renovate)
+VALUES ('P012', 'Villa', 6);
+
 
 
 -- Tuples for Commercial Project
@@ -340,6 +376,15 @@ INSERT INTO CommercialProject(Project_ID, Business_Type) VALUES ('P003', 'Office
 INSERT INTO CommercialProject(Project_ID, Business_Type) VALUES ('P005', 'Retail Store');
 INSERT INTO CommercialProject(Project_ID, Business_Type) VALUES ('P009', 'Warehouse');
 INSERT INTO CommercialProject(Project_ID, Business_Type) VALUES ('P010', 'Hotel');
+INSERT INTO CommercialProject(Project_ID, Business_Type)
+VALUES ('P013', 'Shopping Mall');
+
+INSERT INTO CommercialProject(Project_ID, Business_Type)
+VALUES ('P014', 'Office Complex');
+
+INSERT INTO CommercialProject(Project_ID, Business_Type)
+VALUES ('P015', 'Warehouse');
+
 
 
 -- Tuples for WorkOn

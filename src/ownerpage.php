@@ -9,8 +9,8 @@ error_reporting(E_ALL);
 // Set some parameters
 
 // Database access configuration
-$config["dbuser"] = "ora_nvk2003";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a60336625";	// change to 'a' + your student number
+$config["dbuser"] = "ora_jagathi";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a81887028";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
@@ -85,6 +85,13 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
             position: absolute;
             right:250px;
             padding-bottom: 50px;
+        }
+
+        #view_budget_button {
+            position: absolute;
+            top: 30px;
+            right:30px;
+            
         }
 
     </style>
@@ -1477,6 +1484,15 @@ $column_display_names = [
 </div>
 
 
+
+
+
+<div id="view_budget_button">
+        <form method="GET" action="budgetpage.php">
+            <input type="hidden" name="owner_id" value="<?php echo isset($_GET['owner_id']) ? htmlspecialchars($_GET['owner_id']) : ''; ?>">
+            <button type="submit" >View Budget</button>
+        </form>
+</div>
 
 
 

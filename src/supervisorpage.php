@@ -9,8 +9,8 @@ error_reporting(E_ALL);
 // Set some parameters
 
 // Database access configuration
-$config["dbuser"] = "ora_nvk2003";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a60336625";	// change to 'a' + your student number
+$config["dbuser"] = "ora_jagathi";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a81887028";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
@@ -447,22 +447,65 @@ if (isset($_POST['aggregationQuerySubmit'])) {
 }
 
 
+// // Nested Aggregation with GROUP BY
+
+// if (isset($_POST['nestedQuerySubmit'])) {
+//     if (connectToDB()) {
+//         // Query: Find supervisors managing projects where the total cost exceeds the global average total cost
+//         $nested_query = "
+//             SELECT  S.Supervisor_ID, S.Supervisor_Phone, ROUND(AVG(B.BUDGET_TOTAL_COST), 2) AS Avg_Project_Cost
+//             FROM Supervisor S
+//             INNER JOIN Project P ON S.Supervisor_ID = P.Supervisor_ID
+//             INNER JOIN  Budget B ON P.Budget_ID = B.Budget_ID
+//             GROUP BY S.Supervisor_ID, S.Supervisor_Phone
+//             HAVING AVG(B.BUDGET_TOTAL_COST) > (
+//                                               SELECT AVG(B2.BUDGET_TOTAL_COST)
+//                                               FROM Budget B2
+//                                               )
+//         ";
+
+//         // Execute the query
+//         $nested_result = executePlainSQL($nested_query);
+
+//         echo "<h3 style='text-align: center;'>Supervisors managing projects with total cost higher that average project cost</h3>";
+
+
+//         if ($nested_result) {
+//             printResult($nested_result);
+//         } else {
+//             echo "<p style='color: red; text-align: center;'>No results found.</p>";
+//         }
+//     }
+// }
+
 // Nested Aggregation with GROUP BY
 
 if (isset($_POST['nestedQuerySubmit'])) {
     if (connectToDB()) {
-        // Query: Find supervisors managing projects where the total cost exceeds the global average total cost
+        // Query: Find supervisors managing projects where the total cost exceeds the  average total cost
         $nested_query = "
-            SELECT  S.Supervisor_ID, S.Supervisor_Phone, ROUND(AVG(B.BUDGET_TOTAL_COST), 2) AS Avg_Project_Cost
-            FROM Supervisor S
-            INNER JOIN Project P ON S.Supervisor_ID = P.Supervisor_ID
-            INNER JOIN  Budget B ON P.Budget_ID = B.Budget_ID
-            GROUP BY S.Supervisor_ID, S.Supervisor_Phone
-            HAVING AVG(B.BUDGET_TOTAL_COST) > (
-                                              SELECT AVG(B2.BUDGET_TOTAL_COST)
-                                              FROM Budget B2
-                                              )
-        ";
+            SELECT P.Supervisor_ID, P.Supervisor_Phone
+            FROM Project P
+            JOIN Budget B ON P.Budget_ID = B.Budget_ID
+            GROUP BY P.Supervisor_ID, P.Supervisor_Phone
+            HAVING MAX(B.Budget_Total_Cost) >= (
+                                                 SELECT AVG(B2.Budget_Total_Cost)
+                                                 FROM Project P2
+                                                 JOIN Budget B2 ON P2.Budget_ID = B2.Budget_ID
+
+
+    
+)";
+
+
+                                                 // CAN END SUBQUERY WITH JOIN AD WITHOUT WHERE? IS IT RIGHT ????
+                                                // calculating avergae total cost from budget table  for each budget id in the project table
+                                                // returns avg total cost 
+        //  compares the max total cost of project the supervsiro is working on to the avergae total cost
+        // 102,866-avg total cost
+
+
+
 
         // Execute the query
         $nested_result = executePlainSQL($nested_query);
@@ -477,8 +520,6 @@ if (isset($_POST['nestedQuerySubmit'])) {
         }
     }
 }
-
-
 
 // DIVISION
 if (isset($_POST['divisionQuerySubmit'])) {

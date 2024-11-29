@@ -80,6 +80,13 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
             padding-bottom: 50px;
         }
 
+        #join_project_form {
+            margin-top: 60px; 
+            position: absolute;
+            right:250px;
+            padding-bottom: 50px;
+        }
+
     </style>
         
 </head>
@@ -1017,6 +1024,9 @@ $column_display_names = [
         $attribute = $_POST['attribute'];
         $new_value = $_POST['new_value'];
 
+        // echo "<p style='color:green; text-align:center;'>Attribute: $attribute</p>";
+        // echo "<p style='color:green; text-align:center;'>New Value: $new_value</p>";
+
 
 
         // Check if Project_ID already exists in the database
@@ -1088,20 +1098,31 @@ $column_display_names = [
                 } else {
                     echo "<p style='color:red; text-align:center;'>Error: Supervisor ID Not In Our Database.</p>";
                 }
-
-                
             } elseif ($attribute === "Budget_ID") {
                 // Check if the new Budget_ID exists in the BUDGET table
-                $check_budget_sql = "SELECT COUNT(*) FROM PROJECT WHERE BUDGET_ID = :new_budget_id"; // Changed FROM BUDGET to FROM PROJECT
+                $check_project_sql = "SELECT COUNT(*) FROM PROJECT WHERE BUDGET_ID = :new_budget_id"; // Changed FROM BUDGET to FROM PROJECT
+                $check_project_stmt = oci_parse($db_conn, $check_project_sql);
+                oci_bind_by_name($check_project_stmt, ":new_budget_id", $new_value);
+                oci_execute($check_project_stmt);
+    
+                $budget_row = oci_fetch_assoc($check_project_stmt);
+                $project_budget_exists = $budget_row['COUNT(*)'];
+
+
+                $check_budget_sql = "SELECT COUNT(*) FROM BUDGET WHERE BUDGET_ID = :new_budget_id"; // Changed FROM BUDGET to FROM PROJECT
                 $check_budget_stmt = oci_parse($db_conn, $check_budget_sql);
                 oci_bind_by_name($check_budget_stmt, ":new_budget_id", $new_value);
                 oci_execute($check_budget_stmt);
     
                 $budget_row = oci_fetch_assoc($check_budget_stmt);
                 $budget_exists = $budget_row['COUNT(*)'];
+
+
     
-                if ($budget_exists > 0) {
-                    echo "<p style='color:red; text-align:center;'>Error: Budget ID already exists and is associated with another project.</p>";
+                if ($project_budget_exists > 0 && $budget_exists > 0) {
+                    echo "<p style='color:red; text-align:center;'>Error: Budget ID is associated with another project.</p>";
+                } else if ($budget_exists == 0 && $project_budget_exists == 0) {
+                    echo "<p style='color:red; text-align:center;'>Error: Budget ID does not exist in our database</p>";
                 } else {
                     // Retrieve the old Budget_ID for the project
                     $old_budget_sql = "SELECT BUDGET_ID FROM PROJECT WHERE PROJECT_ID = :project_id";
@@ -1226,32 +1247,81 @@ $column_display_names = [
 </div> -->
 
 
+<div class="button-container" style="left: 150px;">
+    <button onclick="toggleForm('update_project_form')"> Update Project </button>
+</div>
+
+<div id="update_project_form" class="hidden form-container">
+    <h3>Update Project Details</h3>
+    <form method="POST" action="">
+        <label for="project_id">Enter Project ID to Update A Project:</label>
+        <input type="text" id="project_id" name="project_id" required>
+        <br><br>
+
+        <label for="attribute">Choose A Column to Update:</label>
+        <select id="attribute" name="attribute" required onchange="updateInputField()">
+            <option value="" disabled selected>Select a Column</option>
+            <option value="Project_Name">Project Name</option>
+            <option value="Project_Address">Project Address</option>
+            <option value="Project_Status">Project Status</option>
+            <option value="Project_Start_Date">Project Start Date</option>
+            <option value="Project_End_Date">Project End Date</option>
+            <option value="Supervisor_ID">Supervisor ID</option>
+            <option value="Budget_ID">Budget ID</option>
+        </select>
+        <br><br>
+
+        <label for="new_value">Enter New Value:</label>
+        <input type="text" id="new_value" name="new_value" required>
+        <br><br>
+
+        <button type="submit" name="updateProject">Update Project</button>
+    </form>
+</div>
+
+<script>
+    function updateInputField() {
+        const attribute = document.getElementById('attribute').value;
+        const newValueField = document.getElementById('new_value');
+
+        if (attribute === 'Project_Start_Date' || attribute === 'Project_End_Date') {
+            // Change to date input
+            newValueField.type = 'date';
+        } else {
+            // Revert back to text input
+            newValueField.type = 'text';
+        }
+    }
+</script>
+
+
 
 
 <?php
-$selectedAttribute = '';
-$newValueInputType = 'text'; // Default input type
-$showForm = false; // Flag to control form visibility
+// $selectedAttribute = '';
+// $newValueInputType = 'text'; // Default input type
+// $showForm = false; // Flag to control form visibility
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
 
-    if (isset($_POST['attribute'])) {
-        $showForm = true; // Make the form visible after submission
-        $selectedAttribute = $_POST['attribute'];
+//     if (isset($_POST['attribute'])) {
+//         // event.preventDefault();
+//         $showForm = true; // Make the form visible after submission
+//         $selectedAttribute = $_POST['attribute'];
 
-        // Determine the input type based on the selected attribute
-        if ($selectedAttribute === 'Project_Start_Date' || $selectedAttribute === 'Project_End_Date') {
-            $newValueInputType = 'date';
-        } else {
-            $newValueInputType = 'text';
-        }
-    }
-}
+//         // Determine the input type based on the selected attribute
+//         if ($selectedAttribute === 'Project_Start_Date' || $selectedAttribute === 'Project_End_Date') {
+//             $newValueInputType = 'date';
+//         } else {
+//             $newValueInputType = 'text';
+//         }
+//     }
+// }
 ?>
 
 
-<div class="button-container" style="left: 150px;">
+<!-- <div class="button-container" style="left: 150px;">
         <button onclick="toggleForm('update_project_form')"> Update Project </button>
 </div>
 
@@ -1266,8 +1336,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <option value="Project_Status" <?= $selectedAttribute === 'Project_Status' ? 'selected' : '' ?>>Project Status</option>
             <option value="Project_Start_Date" <?= $selectedAttribute === 'Project_Start_Date' ? 'selected' : '' ?>>Project Start Date</option>
             <option value="Project_End_Date" <?= $selectedAttribute === 'Project_End_Date' ? 'selected' : '' ?>>Project End Date</option>
-            <option value="Owner_ID" <?= $selectedAttribute === 'Owner_ID' ? 'selected' : '' ?>>Owner ID</option>
-            <option value="Owner_Phone" <?= $selectedAttribute === 'Owner_Phone' ? 'selected' : '' ?>>Owner Phone</option>
             <option value="Supervisor_ID" <?= $selectedAttribute === 'Supervisor_ID' ? 'selected' : '' ?>>Supervisor ID</option>
             <option value="Budget_ID" <?= $selectedAttribute === 'Budget_ID' ? 'selected' : '' ?>>Budget ID</option>
         </select>
@@ -1283,7 +1351,131 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <button type="submit" name="updateProject">Update Project</button>
     </form>
+</div> -->
+
+
+
+
+
+    <!-- JOIN FUNCTIONALITY -->
+
+
+
+    <?php
+    if (isset($_POST['viewProjectSubmit'])) {
+        // Get the input values
+        $project_id = $_POST['project_id'];
+
+
+
+
+        // Check if Project_ID already exists in the database
+        $check_sql = "SELECT COUNT(*) FROM PROJECT WHERE PROJECT_ID = :project_id";
+        $check_stmt = oci_parse($db_conn, $check_sql);
+        oci_bind_by_name($check_stmt, ":project_id", $project_id);
+        oci_execute($check_stmt);
+
+        // Fetch the result
+        $row = oci_fetch_assoc($check_stmt);
+        $project_exists = $row['COUNT(*)']; // This will be 0 if no match is found
+
+        
+
+        // Check if the Project ID exists for the specific Owner ID
+        $check_project_sql = "SELECT COUNT(*) FROM PROJECT WHERE PROJECT_ID = :project_id AND OWNER_ID = :owner_id";
+        $check_project_stmt = oci_parse($db_conn, $check_project_sql);
+
+        // Bind parameters
+        oci_bind_by_name($check_project_stmt, ":project_id", $project_id);
+        oci_bind_by_name($check_project_stmt, ":owner_id", $owner_id);
+
+        // Execute the query
+        oci_execute($check_project_stmt);
+        $owner_row = oci_fetch_assoc($check_project_stmt);
+        $owner_project_exists = $owner_row['COUNT(*)'];
+
+        if ($project_exists > 0 && $owner_project_exists > 0) {
+            // SQL query to join Project and Budget tables for the specific Project_ID and Owner_ID
+                $select_sql = "
+                SELECT 
+                    p.PROJECT_ID, p.PROJECT_NAME, p.PROJECT_ADDRESS, p.PROJECT_STATUS, 
+                    b.BUDGET_ID, b.BUDGET_MATERIAL_COST, b.BUDGET_INITIAL_ESTIMATE, 
+                    b.BUDGET_CONTRACTOR_FEES, b.BUDGET_TOTAL_COST, b.BUDGET_WAGE_WORKER_COST
+                FROM PROJECT p
+                INNER JOIN BUDGET b ON p.BUDGET_ID = b.BUDGET_ID
+                WHERE p.PROJECT_ID = :project_id AND p.OWNER_ID = :owner_id
+                ";
+
+                $select_stmt = oci_parse($db_conn, $select_sql);
+
+                // Bind parameters
+                oci_bind_by_name($select_stmt, ":project_id", $project_id);
+                oci_bind_by_name($select_stmt, ":owner_id", $owner_id);
+
+                // Execute the select query
+                oci_execute($select_stmt);
+
+                // Fetch the joined data
+                $project_found = false;
+                while ($row = oci_fetch_assoc($select_stmt)) {
+                    $project_found = true;
+                    echo "<p style='color:blue; text-align:center;'>Project Details:</p>";
+                    echo "<ul style='text-align:center;'>";
+                    echo "<li><strong>Project ID:</strong> " . htmlentities($row['PROJECT_ID']) . "</li>";
+                    echo "<li><strong>Project Name:</strong> " . htmlentities($row['PROJECT_NAME']) . "</li>";
+                    echo "<li><strong>Project Address:</strong> " . htmlentities($row['PROJECT_ADDRESS']) . "</li>";
+                    echo "<li><strong>Project Status:</strong> " . htmlentities($row['PROJECT_STATUS']) . "</li>";
+                    echo "<li><strong>Budget ID:</strong> " . htmlentities($row['BUDGET_ID']) . "</li>";
+                    echo "<li><strong>Material Cost:</strong> " . htmlentities($row['BUDGET_MATERIAL_COST']) . "</li>";
+                    echo "<li><strong>Initial Estimate:</strong> " . htmlentities($row['BUDGET_INITIAL_ESTIMATE']) . "</li>";
+                    echo "<li><strong>Contractor Fees:</strong> " . htmlentities($row['BUDGET_CONTRACTOR_FEES']) . "</li>";
+                    echo "<li><strong>Total Cost:</strong> " . htmlentities($row['BUDGET_TOTAL_COST']) . "</li>";
+                    echo "<li><strong>Wage Worker Cost:</strong> " . htmlentities($row['BUDGET_WAGE_WORKER_COST']) . "</li>";
+                    echo "</ul>";
+                }
+
+                // Output error message if no project found
+                if (!$project_found) {
+                    echo "<p style='color:red; text-align:center;'>No matching project found for the given Project ID or you do not have access to this project.</p>";
+                }
+        } else if ($project_exists > 0 && $owner_project_exists == 0) {
+            echo "<p style='color:red; text-align:center;'>You do not have access to this project</p>";
+        } else {
+            echo "<p style='color:red; text-align:center;'>No matching project found for the given Project ID</p>";
+        }
+    }
+    ?>
+
+
+
+    <!-- <div class="button-container" style="right: 300px;">
+        <button onclick="toggleForm('join_project_form')"> Budget Details</button>
+    </div>
+
+    <div id="join_project_form" class="hidden form-container">
+        <h3>Check Budget Details for a Project</h3>
+        <form method="POST" action="">
+            <label for="Project_ID">Project ID:</label>
+            <input type="text" id="project_id" name="project_id" required><br><br>
+
+            <button type="submit" name="joinProjectSubmit">Get Details</button>
+        </form>
+    </div> -->
+
+    <div class="button-container" style="right: 300px;">
+    <button onclick="toggleForm('join_project_form')"> View Project and Budget Details </button>
 </div>
+
+<div id="join_project_form" class="hidden form-container">
+    <h3>View Project and Budget Details</h3>
+    <form method="POST" action="">
+        <label for="project_id">Project ID:</label>
+        <input type="text" id="project_id" name="project_id" required><br><br>
+
+        <button type="submit" name="viewProjectSubmit">View Details</button>
+    </form>
+</div>
+
 
 
 

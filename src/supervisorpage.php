@@ -9,8 +9,8 @@ error_reporting(E_ALL);
 // Set some parameters
 
 // Database access configuration
-$config["dbuser"] = "ora_nvk2003";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a60336625";	// change to 'a' + your student number
+$config["dbuser"] = "ora_jagathi";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a81887028";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
@@ -157,6 +157,12 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
         <br /> <br />
 
         <button type="submit" name="filterSubmit">Filter</button>
+    </form>
+</div>
+
+<div class="filter-container">
+    <form method="POST" action="">
+        <button type="submit" name="aggregationQuerySubmit">View Average Materials Cost</button>
     </form>
 </div>
 
@@ -407,10 +413,58 @@ function handleFilterRequest($supervisor_id)
 
 
 
+// Aggregation with GROUP BY
+if (isset($_POST['aggregationQuerySubmit'])) {
+    if (connectToDB()) {
+        // Aggregation query to calculate average material cost grouped by project type
+        $groupby_sql = "
+            SELECT OE.Owner_Type AS Project_Type, COUNT(P.Project_ID) AS Total_Projects, ROUND(AVG(B.BUDGET_MATERIAL_COST),2) AS Avg_Material_Cost
+            FROM Project P
+            INNER JOIN OwnerEntity OE ON P.Owner_ID = OE.Owner_ID
+            INNER JOIN Budget B ON P.Budget_ID = B.Budget_ID
+            GROUP BY OE.Owner_Type
+        ";
+
+        // Execute the query
+        $groupby_result = executePlainSQL($groupby_sql);
+        printResult($groupby_result);
+
+    }
+}
+
+?>
+
+
+        <!-- // // Display the results in a table
+        // echo "<div class='result-container'>";
+   
+        // echo "<table>";
+        // echo "<tr>
+        //         <th>Project Type</th>
+        //         <th>Total Projects</th>
+        //         <th>Average Material Cost</th>
+        //       </tr>";
+
+        // while ($row = oci_fetch_assoc($groupby_result)) {
+        //     echo "<tr>";
+        //     echo "<td>" . htmlentities($row['Project_Type']) . "</td>";
+        //     echo "<td>" . htmlentities($row['Total_Projects']) . "</td>";
+        //     echo "<td>" . htmlentities(number_format($row['Avg_Material_Cost'], 2)) . "</td>";
+        //     echo "</tr>";
+        // }
+
+        // echo "</table>";
+        // echo "</div>";
+
+  -->
 
 
 
 
+
+
+
+<!-- 
 // function handleFilterRequest($supervisor_id)
 // {
 
@@ -459,9 +513,9 @@ function handleFilterRequest($supervisor_id)
 // }
 
 
+ -->
 
-
-
+<?php
 
 if (connectToDB()) {
 

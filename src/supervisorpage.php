@@ -9,8 +9,8 @@ error_reporting(E_ALL);
 // Set some parameters
 
 // Database access configuration
-$config["dbuser"] = "ora_jagathi";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a81887028";	// change to 'a' + your student number
+$config["dbuser"] = "ora_nvk2003";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a60336625";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
@@ -170,6 +170,14 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
     <form method="POST" action="">
         <button type="submit" name="nestedQuerySubmit" margin: 20px;>
             View Supervisors Working on High Cost Projects
+        </button>
+    </form>
+</div>
+
+<div class="filter-container">
+    <form method="POST" action="">
+        <button type="submit" name="divisionQuerySubmit" margin: 20px;>
+            View Supervisors Managing Projects of All Property Types
         </button>
     </form>
 </div>
@@ -469,6 +477,50 @@ if (isset($_POST['nestedQuerySubmit'])) {
         }
     }
 }
+
+
+
+// DIVISION
+if (isset($_POST['divisionQuerySubmit'])) {
+    if (connectToDB()) {
+        // SQL query for supervisors managing projects of all property types
+        // $division_sql = "
+        //     SELECT S.Supervisor_ID, S.Supervisor_Name
+        //     FROM Supervisor S
+        //     WHERE NOT EXISTS (
+        //         SELECT OE.Owner_Type
+        //         FROM OwnerEntity OE
+        //         WHERE NOT EXISTS (
+        //             SELECT P.Project_ID
+        //             FROM Project P
+        //             WHERE P.Supervisor_ID = S.Supervisor_ID 
+        //               AND P.Owner_ID = OE.Owner_ID
+        //         )
+        //     )
+        // ";
+
+        $division_sql = "
+        SELECT S.Supervisor_ID, S.Supervisor_Name
+        FROM Supervisor S
+        WHERE NOT EXISTS (
+            SELECT OE.Owner_Type
+            FROM OwnerEntity OE
+            WHERE OE.Owner_Type NOT IN (
+                SELECT DISTINCT OE2.Owner_Type
+                FROM Project P
+                INNER JOIN OwnerEntity OE2 ON P.Owner_ID = OE2.Owner_ID
+                WHERE P.Supervisor_ID = S.Supervisor_ID
+            )
+        )";
+
+        // Execute the query
+        $division_result = executePlainSQL($division_sql);
+
+        // Print results
+        printResult($division_result);
+    }
+}
+
 
 ?>
 

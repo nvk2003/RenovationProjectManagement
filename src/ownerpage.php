@@ -9,8 +9,8 @@ error_reporting(E_ALL);
 // Set some parameters
 
 // Database access configuration
-$config["dbuser"] = "ora_jagathi";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a81887028";	// change to 'a' + your student number
+$config["dbuser"] = "ora_nvk2003";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a60336625";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
@@ -1364,93 +1364,94 @@ $column_display_names = [
 
 
 
+
+
+
     <!-- JOIN FUNCTIONALITY -->
 
-
-
     <?php
-    if (isset($_POST['viewProjectSubmit'])) {
-        // Get the input values
-        $project_id = $_POST['project_id'];
+    // if (isset($_POST['viewProjectSubmit'])) {
+    //     // Get the input values
+    //     $project_id = $_POST['project_id'];
 
 
 
 
-        // Check if Project_ID already exists in the database
-        $check_sql = "SELECT COUNT(*) FROM PROJECT WHERE PROJECT_ID = :project_id";
-        $check_stmt = oci_parse($db_conn, $check_sql);
-        oci_bind_by_name($check_stmt, ":project_id", $project_id);
-        oci_execute($check_stmt);
+    //     // Check if Project_ID already exists in the database
+    //     $check_sql = "SELECT COUNT(*) FROM PROJECT WHERE PROJECT_ID = :project_id";
+    //     $check_stmt = oci_parse($db_conn, $check_sql);
+    //     oci_bind_by_name($check_stmt, ":project_id", $project_id);
+    //     oci_execute($check_stmt);
 
-        // Fetch the result
-        $row = oci_fetch_assoc($check_stmt);
-        $project_exists = $row['COUNT(*)']; // This will be 0 if no match is found
+    //     // Fetch the result
+    //     $row = oci_fetch_assoc($check_stmt);
+    //     $project_exists = $row['COUNT(*)']; // This will be 0 if no match is found
 
         
 
-        // Check if the Project ID exists for the specific Owner ID
-        $check_project_sql = "SELECT COUNT(*) FROM PROJECT WHERE PROJECT_ID = :project_id AND OWNER_ID = :owner_id";
-        $check_project_stmt = oci_parse($db_conn, $check_project_sql);
+    //     // Check if the Project ID exists for the specific Owner ID
+    //     $check_project_sql = "SELECT COUNT(*) FROM PROJECT WHERE PROJECT_ID = :project_id AND OWNER_ID = :owner_id";
+    //     $check_project_stmt = oci_parse($db_conn, $check_project_sql);
 
-        // Bind parameters
-        oci_bind_by_name($check_project_stmt, ":project_id", $project_id);
-        oci_bind_by_name($check_project_stmt, ":owner_id", $owner_id);
+    //     // Bind parameters
+    //     oci_bind_by_name($check_project_stmt, ":project_id", $project_id);
+    //     oci_bind_by_name($check_project_stmt, ":owner_id", $owner_id);
 
-        // Execute the query
-        oci_execute($check_project_stmt);
-        $owner_row = oci_fetch_assoc($check_project_stmt);
-        $owner_project_exists = $owner_row['COUNT(*)'];
+    //     // Execute the query
+    //     oci_execute($check_project_stmt);
+    //     $owner_row = oci_fetch_assoc($check_project_stmt);
+    //     $owner_project_exists = $owner_row['COUNT(*)'];
 
-        if ($project_exists > 0 && $owner_project_exists > 0) {
-            // SQL query to join Project and Budget tables for the specific Project_ID and Owner_ID
-                $select_sql = "
-                SELECT 
-                    p.PROJECT_ID, p.PROJECT_NAME, p.PROJECT_ADDRESS, p.PROJECT_STATUS, 
-                    b.BUDGET_ID, b.BUDGET_MATERIAL_COST, b.BUDGET_INITIAL_ESTIMATE, 
-                    b.BUDGET_CONTRACTOR_FEES, b.BUDGET_TOTAL_COST, b.BUDGET_WAGE_WORKER_COST
-                FROM PROJECT p
-                INNER JOIN BUDGET b ON p.BUDGET_ID = b.BUDGET_ID
-                WHERE p.PROJECT_ID = :project_id AND p.OWNER_ID = :owner_id
-                ";
+    //     if ($project_exists > 0 && $owner_project_exists > 0) {
+    //         // SQL query to join Project and Budget tables for the specific Project_ID and Owner_ID
+    //             $select_sql = "
+    //             SELECT 
+    //                 p.PROJECT_ID, p.PROJECT_NAME, p.PROJECT_ADDRESS, p.PROJECT_STATUS, 
+    //                 b.BUDGET_ID, b.BUDGET_MATERIAL_COST, b.BUDGET_INITIAL_ESTIMATE, 
+    //                 b.BUDGET_CONTRACTOR_FEES, b.BUDGET_TOTAL_COST, b.BUDGET_WAGE_WORKER_COST
+    //             FROM PROJECT p
+    //             INNER JOIN BUDGET b ON p.BUDGET_ID = b.BUDGET_ID
+    //             WHERE p.PROJECT_ID = :project_id AND p.OWNER_ID = :owner_id
+    //             ";
 
-                $select_stmt = oci_parse($db_conn, $select_sql);
+    //             $select_stmt = oci_parse($db_conn, $select_sql);
 
-                // Bind parameters
-                oci_bind_by_name($select_stmt, ":project_id", $project_id);
-                oci_bind_by_name($select_stmt, ":owner_id", $owner_id);
+    //             // Bind parameters
+    //             oci_bind_by_name($select_stmt, ":project_id", $project_id);
+    //             oci_bind_by_name($select_stmt, ":owner_id", $owner_id);
 
-                // Execute the select query
-                oci_execute($select_stmt);
+    //             // Execute the select query
+    //             oci_execute($select_stmt);
 
-                // Fetch the joined data
-                $project_found = false;
-                while ($row = oci_fetch_assoc($select_stmt)) {
-                    $project_found = true;
-                    echo "<p style='color:blue; text-align:center;'>Project Details:</p>";
-                    echo "<ul style='text-align:center;'>";
-                    echo "<li><strong>Project ID:</strong> " . htmlentities($row['PROJECT_ID']) . "</li>";
-                    echo "<li><strong>Project Name:</strong> " . htmlentities($row['PROJECT_NAME']) . "</li>";
-                    echo "<li><strong>Project Address:</strong> " . htmlentities($row['PROJECT_ADDRESS']) . "</li>";
-                    echo "<li><strong>Project Status:</strong> " . htmlentities($row['PROJECT_STATUS']) . "</li>";
-                    echo "<li><strong>Budget ID:</strong> " . htmlentities($row['BUDGET_ID']) . "</li>";
-                    echo "<li><strong>Material Cost:</strong> " . htmlentities($row['BUDGET_MATERIAL_COST']) . "</li>";
-                    echo "<li><strong>Initial Estimate:</strong> " . htmlentities($row['BUDGET_INITIAL_ESTIMATE']) . "</li>";
-                    echo "<li><strong>Contractor Fees:</strong> " . htmlentities($row['BUDGET_CONTRACTOR_FEES']) . "</li>";
-                    echo "<li><strong>Total Cost:</strong> " . htmlentities($row['BUDGET_TOTAL_COST']) . "</li>";
-                    echo "<li><strong>Wage Worker Cost:</strong> " . htmlentities($row['BUDGET_WAGE_WORKER_COST']) . "</li>";
-                    echo "</ul>";
-                }
+    //             // Fetch the joined data
+    //             $project_found = false;
+    //             while ($row = oci_fetch_assoc($select_stmt)) {
+    //                 $project_found = true;
+    //                 echo "<p style='color:blue; text-align:center;'>Project Details:</p>";
+    //                 echo "<ul style='text-align:center;'>";
+    //                 echo "<li><strong>Project ID:</strong> " . htmlentities($row['PROJECT_ID']) . "</li>";
+    //                 echo "<li><strong>Project Name:</strong> " . htmlentities($row['PROJECT_NAME']) . "</li>";
+    //                 echo "<li><strong>Project Address:</strong> " . htmlentities($row['PROJECT_ADDRESS']) . "</li>";
+    //                 echo "<li><strong>Project Status:</strong> " . htmlentities($row['PROJECT_STATUS']) . "</li>";
+    //                 echo "<li><strong>Budget ID:</strong> " . htmlentities($row['BUDGET_ID']) . "</li>";
+    //                 echo "<li><strong>Material Cost:</strong> " . htmlentities($row['BUDGET_MATERIAL_COST']) . "</li>";
+    //                 echo "<li><strong>Initial Estimate:</strong> " . htmlentities($row['BUDGET_INITIAL_ESTIMATE']) . "</li>";
+    //                 echo "<li><strong>Contractor Fees:</strong> " . htmlentities($row['BUDGET_CONTRACTOR_FEES']) . "</li>";
+    //                 echo "<li><strong>Total Cost:</strong> " . htmlentities($row['BUDGET_TOTAL_COST']) . "</li>";
+    //                 echo "<li><strong>Wage Worker Cost:</strong> " . htmlentities($row['BUDGET_WAGE_WORKER_COST']) . "</li>";
+    //                 echo "</ul>";
+    //             }
 
-                // Output error message if no project found
-                if (!$project_found) {
-                    echo "<p style='color:red; text-align:center;'>No matching project found for the given Project ID or you do not have access to this project.</p>";
-                }
-        } else if ($project_exists > 0 && $owner_project_exists == 0) {
-            echo "<p style='color:red; text-align:center;'>You do not have access to this project</p>";
-        } else {
-            echo "<p style='color:red; text-align:center;'>No matching project found for the given Project ID</p>";
-        }
-    }
+    //             // Output error message if no project found
+    //             if (!$project_found) {
+    //                 echo "<p style='color:red; text-align:center;'>No matching project found for the given Project ID or you do not have access to this project.</p>";
+    //             }
+    //     } else if ($project_exists > 0 && $owner_project_exists == 0) {
+    //         echo "<p style='color:red; text-align:center;'>You do not have access to this project</p>";
+    //     } else {
+    //         echo "<p style='color:red; text-align:center;'>No matching project found for the given Project ID</p>";
+    //     }
+    // }
     ?>
 
 
@@ -1469,7 +1470,10 @@ $column_display_names = [
         </form>
     </div> -->
 
-    <div class="button-container" style="right: 300px;">
+
+    <!-- WORKING BUTTON CODE -->
+     
+    <!-- <div class="button-container" style="right: 300px;">
     <button onclick="toggleForm('join_project_form')"> View Project and Budget Details </button>
 </div>
 
@@ -1481,7 +1485,7 @@ $column_display_names = [
 
         <button type="submit" name="viewProjectSubmit">View Details</button>
     </form>
-</div>
+</div> -->
 
 
 

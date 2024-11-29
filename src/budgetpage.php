@@ -50,7 +50,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
             margin: 20px;
         }
 
-        .filter-container {
+        .count-projects-container {
             padding-top: 20px;
             margin: 20px;
             padding-bottom: 40px;
@@ -209,15 +209,7 @@ function executeBoundSQL($cmdstr, $list)
     </div>	
 
 
-    <div class="filter-container">
-    <h3>Filter Projects by Contractor Fees</h3>
-    <form method="POST" action="">
-        <label for="threshold">Find the projects that have a Contrator Fees over (in $):</label>
-        <input type="number" id="threshold" name="threshold" step="1" required>
-        <br><br>
-        <button type="submit" name="filterContractorFees">Submit</button>
-    </form>
-</div>
+    
 
 
 
@@ -349,28 +341,57 @@ function executeBoundSQL($cmdstr, $list)
 
 <!-- AGGREGATION WITH HAVING -->
 
+<div class="count-projects-container">
+    <h3>Find the Supervisor Details by No. of Projects</h3>
+    <form method="POST" action="">
+        <label for="threshold">Find The Supervisors Who Are Managing More Than  </label>
+        <input type="number" id="threshold" name="threshold" step="1" min="0" required>
+        <label for="threshold"> Projects</label>
+        <br><br>
+        <button type="submit" name="countSupervisorProjects">Submit</button>
+    </form>
+</div>
+
+
+
 <?php
-if (isset($_POST['filterContractorFees'])) {
+if (isset($_POST['countSupervisorProjects'])) {
     // Get the input threshold value
     $threshold = $_POST['threshold'];
-    $owner_id = isset($_GET['owner_id']) ? $_GET['owner_id'] : null;
+    // $owner_id = isset($_GET['owner_id']) ? $_GET['owner_id'] : null;
 
     // SQL query to aggregate contractor fees for the logged-in owner
+    // $query = "
+    //     SELECT 
+    //         p.Project_ID, 
+    //         p.Project_Name, 
+    //         SUM(b.Budget_Contractor_Fees) AS Total_Contractor_Fees
+    //     FROM 
+    //         Project p
+    //     INNER JOIN 
+    //         Budget b ON p.Budget_ID = b.Budget_ID
+    //     WHERE 
+    //         p.Owner_ID = :owner_id
+    //     GROUP BY 
+    //         p.Project_ID, p.Project_Name
+    //     HAVING 
+    //         SUM(b.Budget_Contractor_Fees) > :threshold
+    // ";
+
+
     $query = "
         SELECT 
-            p.Project_ID, 
-            p.Project_Name, 
-            SUM(b.Budget_Contractor_Fees) AS Total_Contractor_Fees
+            s.Supervisor_ID, 
+            s.Supervisor_Name, 
+            COUNT(p.Project_ID) AS Number_Of_Projects
         FROM 
-            Project p
-        INNER JOIN 
-            Budget b ON p.Budget_ID = b.Budget_ID
-        WHERE 
-            p.Owner_ID = :owner_id
+            Supervisor s
+        JOIN 
+            Project p ON s.Supervisor_ID = p.Supervisor_ID
         GROUP BY 
-            p.Project_ID, p.Project_Name
+            s.Supervisor_ID, s.Supervisor_Name
         HAVING 
-            SUM(b.Budget_Contractor_Fees) > :threshold
+            COUNT(p.Project_ID) > :threshold
     ";
 
 
@@ -380,49 +401,77 @@ if (isset($_POST['filterContractorFees'])) {
     // echo "<p>Threshold: $threshold</p>";
 
 
-    // Prepare and execute the query
     $stmt = oci_parse($db_conn, $query);
-
-    // Bind parameters
-    oci_bind_by_name($stmt, ":owner_id", $owner_id); 
     oci_bind_by_name($stmt, ":threshold", $threshold);
 
-
     if (oci_execute($stmt)) {
-        echo "<h3 style='text-align: center;'>Projects with Contractor Fees Greater Than $" . htmlentities($threshold) . "</h3>";
-
-        // Start table and set the headers
-        echo "<table border='1' style='width: 80%; margin: 20px auto;'>";
-        echo "<tr><th>Project ID</th><th>Project Name</th><th>Total Contractor Fees</th></tr>";
-
-        // Loop through the results
+        // Initialize an empty results array
+        $results = [];
+    
+        // Fetch all rows into the $results array
         while ($row = oci_fetch_assoc($stmt)) {
-            echo "<tr>";
-            echo "<td>" . htmlentities($row['PROJECT_ID']) . "</td>";
-            echo "<td>" . htmlentities($row['PROJECT_NAME']) . "</td>";
-            echo "<td>" . number_format($row['TOTAL_CONTRACTOR_FEES'], 2) . "</td>";
-            echo "</tr>";
+            $results[] = $row;
         }
-
-        echo "</table>";
+    
+        // Check if results array is not empty
+        if (!empty($results)) {
+            echo "<h3 style='text-align: center;'>Supervisors Managing More Than $threshold Projects</h3>";
+            echo "<table border='1' style='width: 80%; margin: 20px auto;'>";
+            echo "<tr><th>Supervisor ID</th><th>Supervisor Name</th><th>Number of Projects</th></tr>";
+    
+            // Loop through the results array and display each row
+            foreach ($results as $row) {
+                echo "<tr>";
+                echo "<td>" . htmlentities($row['SUPERVISOR_ID']) . "</td>";
+                echo "<td>" . htmlentities($row['SUPERVISOR_NAME']) . "</td>";
+                echo "<td>" . htmlentities($row['NUMBER_OF_PROJECTS']) . "</td>";
+                echo "</tr>";
+            }
+    
+            echo "</table>";
+        } else {
+            // If no results, show a message
+            echo "<p style='color: red; text-align: center;'>No supervisors manage more than $threshold projects.</p>";
+        }
     } else {
-        // Handle errors
-        $e = oci_error($stmt);
-        echo "<p style='color: red; text-align: center;'>Error: " . htmlentities($e['message']) . "</p>";
+        // Handle error if query fails
+        echo "<p style='color: red; text-align: center;'>Error executing the query.</p>";
     }
+    
+
+
+
+    // // Prepare and execute the query
+    // $stmt = oci_parse($db_conn, $query);
+
+    // // Bind parameters
+    // oci_bind_by_name($stmt, ":owner_id", $owner_id); 
+    // oci_bind_by_name($stmt, ":threshold", $threshold);
+
+
+    // if (oci_execute($stmt)) {
+    //     echo "<h3 style='text-align: center;'>Projects with Contractor Fees Greater Than $" . htmlentities($threshold) . "</h3>";
+    
+    //     // Start table and set the headers
+    //     echo "<table border='1' style='width: 80%; margin: 20px auto;'>";
+    //     echo "<tr><th>Project ID</th><th>Project Name</th><th>Contractor Fees</th></tr>";
+    
+    //     // Loop through the results
+    //     while ($row = oci_fetch_assoc($stmt)) {
+    //         echo "<tr>";
+    //         echo "<td>" . htmlentities($row['PROJECT_ID']) . "</td>";
+    //         echo "<td>" . htmlentities($row['PROJECT_NAME']) . "</td>";
+    //         echo "<td>" . number_format($row['BUDGET_CONTRACTOR_FEES'], 2) . "</td>"; // Output the contractor fees
+    //         echo "</tr>";
+    //     }
+    
+    //     echo "</table>";
+    // } else {
+    //     // Handle error if query fails
+    //     echo "<p style='color: red; text-align: center;'>Error executing the query.</p>";
+    // }
 }
 ?>
-
-
-
-
-
-
-
-
-
-
-
 
 
 </body>

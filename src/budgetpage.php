@@ -9,8 +9,8 @@ error_reporting(E_ALL);
 // Set some parameters
 
 // Database access configuration
-$config["dbuser"] = "ora_nvk2003";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a60336625";	// change to 'a' + your student number
+$config["dbuser"] = "ora_jagathi";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a81887028";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
@@ -253,7 +253,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
                                 b.BUDGET_ID, b.BUDGET_MATERIAL_COST, b.BUDGET_INITIAL_ESTIMATE, 
                                 b.BUDGET_CONTRACTOR_FEES, b.BUDGET_TOTAL_COST, b.BUDGET_WAGE_WORKER_COST
                             FROM PROJECT p
-                            INNER JOIN BUDGET b ON p.BUDGET_ID = b.BUDGET_ID
+                            JOIN BUDGET b ON p.BUDGET_ID = b.BUDGET_ID
                             WHERE p.PROJECT_ID = :project_id AND p.OWNER_ID = :owner_id
                             ";
 

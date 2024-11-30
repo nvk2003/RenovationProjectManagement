@@ -9,8 +9,8 @@ error_reporting(E_ALL);
 // Set some parameters
 
 // Database access configuration
-$config["dbuser"] = "ora_nvk2003";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a60336625";	// change to 'a' + your student number
+$config["dbuser"] = "ora_jagathi";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a81887028";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
@@ -237,7 +237,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
     <div class="filter-container">
         <form method="POST" action="">
             <button type="submit" name="divisionQuerySubmit" margin: 20px;>
-                View Supervisors Managing Projects of All Property Types
+                View Supervisors Managing Projects of All Owner Types
             </button>
         </form>
     </div>
@@ -541,7 +541,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
                 )";
 
                 $division_result = executePlainSQL($division_sql);
-                echo "<h3 style='text-align: center;'>Supervisors Manging Projects of All Property Types</h3>";
+                echo "<h3 style='text-align: center;'>Supervisors Manging Projects of All Owner Types</h3>";
                 printResult($division_result);
             }
         }

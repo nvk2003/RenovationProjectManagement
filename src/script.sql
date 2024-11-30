@@ -333,24 +333,11 @@ INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Dat
 INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P008', '505 Birch St', 'Birchwood Estate', '2023-08-25', '2024-07-15', 'In Progress', 'S003', '8901234567', 'B008', 'O002', '8765432109');
 INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P009', '606 Spruce St', 'Logistics Warehouse', '2023-09-05', '2024-10-01', 'Completed', 'S004', '9012345678', 'B009', 'O004', '6543210987');
 INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P010', '707 Redwood St', 'Redwood Hotel', '2023-10-01', '2024-12-15', 'In Progress', 'S005', '0123456789', 'B010', 'O005', '5432109876');
-
-
--- Residential Projects
-INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone)
-VALUES ('P011', '123 Maple Street', 'Maple Street Renovation', '2024-01-01', '2024-03-01', 'In Progress', 'S001', '6789012345', 'B011', 'O001', '9876543210');
-
-INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone)
-VALUES ('P012', '456 Pine Avenue', 'Pine Avenue Villa', '2024-02-01', '2024-04-15', 'Pending', 'S001', '6789012345', 'B012', 'O002', '8765432109');
-
--- Commercial Projects
-INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone)
-VALUES ('P013', '789 Elm Drive', 'Elm Drive Mall', '2024-01-15', '2024-06-30', 'Completed', 'S001', '6789012345', 'B013', 'O003', '7654321098');
-
-INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone)
-VALUES ('P014', '101 Cedar Lane', 'Cedar Lane Office', '2024-03-01', '2024-05-20', 'In Progress', 'S001', '6789012345', 'B014', 'O004', '6543210987');
-
-INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone)
-VALUES ('P015', '202 Oak Street', 'Oak Street Warehouse', '2024-04-01', '2024-07-15', 'Pending', 'S001', '6789012345', 'B015', 'O005', '5432109876');
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P011', '123 Maple Street', 'Maple Street Renovation', '2024-01-01', '2024-03-01', 'In Progress', 'S001', '6789012345', 'B011', 'O001', '9876543210');
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P012', '456 Pine Avenue', 'Pine Avenue Villa', '2024-02-01', '2024-04-15', 'Pending', 'S001', '6789012345', 'B012', 'O002', '8765432109');
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P013', '789 Elm Drive', 'Elm Drive Mall', '2024-01-15', '2024-06-30', 'Completed', 'S001', '6789012345', 'B013', 'O003', '7654321098');
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P014', '101 Cedar Lane', 'Cedar Lane Office', '2024-03-01', '2024-05-20', 'In Progress', 'S001', '6789012345', 'B014', 'O004', '6543210987');
+INSERT INTO Project(Project_ID, Project_Address, Project_Name, Project_Start_Date, Project_End_Date, Project_Status, Supervisor_ID, Supervisor_Phone, Budget_ID, Owner_ID, Owner_Phone) VALUES ('P015', '202 Oak Street', 'Oak Street Warehouse', '2024-04-01', '2024-07-15', 'Pending', 'S001', '6789012345', 'B015', 'O005', '5432109876');
 
 
 
